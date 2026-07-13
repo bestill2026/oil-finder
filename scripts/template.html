@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>오일 파인더 — 내 차 엔진오일·필터 규격 찾기</title>
+<style>
+/* ── G마켓 산스 ── */
+@font-face{font-family:'GmarketSans';font-weight:500;font-style:normal;
+  src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff') format('woff')}
+@font-face{font-family:'GmarketSans';font-weight:700;font-style:normal;
+  src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansBold.woff') format('woff')}
+
+/* ── GDS Foundation 토큰 ── */
+:root{
+  --green-700:#018600; --green-600:#01A900; --green-500:#00C400; --green-100:#A5F4A0; --green-50:#E5FCE3;
+  --blue-700:#0048C8; --blue-500:#067DFD; --blue-50:#EEF7FF;
+  --red-500:#EF2B2A; --red-50:#FFF5F5;
+  --orange-700:#B43200; --orange-500:#F9560E; --orange-50:#FFF6F2;
+  --cta:#0028AC;
+  --g900:#222222; --g800:#424242; --g700:#616161; --g500:#9E9E9E; --g400:#BDBDBD;
+  --g300:#E0E0E0; --g200:#EEEEEE; --g100:#F5F5F5; --g50:#FAFAFA;
+  --font-brand:'GmarketSans','Apple SD Gothic Neo','Noto Sans KR',sans-serif;
+  --font-body:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-body);background:var(--g100);color:var(--g900);
+  min-height:100vh;padding:0 0 64px;font-size:15px;line-height:1.5}
+.wrap{max-width:640px;margin:0 auto;padding:0 16px}
+
+/* ── 헤더 ── */
+header{background:#fff;border-bottom:1px solid var(--g200);padding:18px 0 16px;margin-bottom:16px}
+header .wrap{display:flex;flex-direction:column;gap:4px}
+.brand{font-family:var(--font-brand);font-weight:700;font-size:22px;color:var(--g900);letter-spacing:-.01em}
+.brand .dot{color:var(--green-500)}
+.tagline{font-size:13px;color:var(--g700)}
+
+/* ── 카드 공통 ── */
+.card{background:#fff;border:1px solid var(--g300);border-radius:8px;overflow:hidden}
+
+/* ── 탭 (GDS Tabs: 언더라인) ── */
+.tabs{display:flex;border-bottom:1px solid var(--g200)}
+.tab{flex:1;padding:14px 8px;text-align:center;cursor:pointer;background:#fff;border:none;
+  font-family:var(--font-body);font-size:15px;font-weight:500;color:var(--g500);
+  border-bottom:2px solid transparent;transition:color .15s}
+.tab[aria-selected="true"]{color:var(--g900);font-weight:700;border-bottom-color:var(--g900)}
+.tab:focus-visible{outline:2px solid var(--cta);outline-offset:-2px}
+.panel{padding:20px 16px}
+
+/* ── 선택 요약 바 (sticky) ── */
+.sum-bar{position:sticky;top:0;z-index:5;display:flex;flex-wrap:wrap;gap:6px;
+  background:#fff;padding:0 0 12px;margin-bottom:14px;border-bottom:1px solid var(--g200)}
+.sum-chip{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;
+  border:1px solid var(--green-500);background:var(--green-50);color:var(--green-700);
+  font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font-body);transition:all .15s}
+.sum-chip .edit{font-weight:400;font-size:11px;color:var(--green-600)}
+.sum-chip:hover{background:#fff}
+.sum-chip:focus-visible{outline:2px solid var(--cta);outline-offset:2px}
+
+/* ── 스텝 라벨 ── */
+.step-label{display:block;font-size:12px;font-weight:700;color:var(--g700);margin-bottom:8px}
+.step-label .num{color:var(--green-600)}
+
+/* ── 칩 (GDS Chips: 선택 시 그린) ── */
+.choices{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.choices .group-block{width:100%}
+.group-chips{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 10px}
+.chip{padding:8px 14px;border:1px solid var(--g300);border-radius:999px;background:#fff;
+  cursor:pointer;font-family:var(--font-body);font-size:14px;color:var(--g800);transition:all .15s}
+.chip:hover{border-color:var(--g500)}
+.chip[aria-pressed="true"]{background:var(--green-50);border-color:var(--green-500);
+  color:var(--green-700);font-weight:700}
+.chip:focus-visible{outline:2px solid var(--cta);outline-offset:2px}
+
+/* ── 드롭다운 (GDS Dropdowns) ── */
+select.chip{border-radius:8px;padding:10px 32px 10px 12px;appearance:none;
+  background:#fff url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8"><path d="M1 1l5 5 5-5" stroke="%23616161" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>') no-repeat right 12px center}
+
+/* ── 엔진 리스트 (GDS Lists) ── */
+.engine-list{display:flex;flex-direction:column;gap:8px;margin-bottom:4px}
+.gen-head{font-size:12px;font-weight:700;color:var(--g500);margin:8px 0 2px}
+.engine-item{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;
+  padding:14px;border:1px solid var(--g300);border-radius:8px;background:#fff;cursor:pointer;
+  text-align:left;font-family:var(--font-body);transition:border-color .15s}
+.engine-item:hover{border-color:var(--g900)}
+.engine-item:focus-visible{outline:2px solid var(--cta);outline-offset:2px}
+.engine-item .en{font-weight:700;font-size:14px;color:var(--g900)}
+.engine-item .meta{color:var(--g500);font-size:12px;margin-top:3px}
+.fuel{font-size:11px;font-weight:700;padding:4px 8px;border-radius:4px;
+  background:var(--g100);color:var(--g700);white-space:nowrap}
+.fuel.hev{background:var(--green-50);color:var(--green-700)}
+.fuel.dsl{background:var(--g800);color:#fff}
+
+/* ── VIN 패널 (GDS Text Fields + CTA Button) ── */
+.vin-row{display:flex;gap:8px}
+.vin-input{flex:1;padding:12px 14px;border:1px solid var(--g300);border-radius:8px;
+  font-family:var(--font-body);font-size:15px;font-weight:600;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--g900);background:#fff}
+.vin-input::placeholder{color:var(--g400);font-weight:400}
+.vin-input:focus{outline:none;border-color:var(--g900)}
+.btn-cta{padding:12px 20px;border:none;border-radius:8px;cursor:pointer;
+  font-family:var(--font-body);font-weight:700;font-size:15px;background:var(--cta);color:#fff;
+  transition:opacity .15s}
+.btn-cta:hover{opacity:.9}
+.btn-cta:focus-visible{outline:2px solid var(--g900);outline-offset:2px}
+.vin-help{margin-top:10px;font-size:12px;color:var(--g500);line-height:1.6}
+.info-box{margin-top:14px;padding:12px 14px;border-radius:8px;font-size:13px;line-height:1.6}
+.info-box.blue{background:var(--blue-50);color:var(--blue-700)}
+.info-box.red{background:var(--red-50);color:var(--red-500)}
+.info-box strong{font-weight:700}
+
+/* ── VIN 유도 배너 (GDS Info boxes: Informative) ── */
+.vin-nudge{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:12px;
+  padding:12px 14px;border-radius:8px;background:var(--blue-50);
+  font-size:13px;line-height:1.55;color:var(--g800)}
+.vin-nudge strong{color:var(--blue-700)}
+.vin-nudge .go{padding:8px 14px;border:1px solid var(--cta);border-radius:8px;background:#fff;
+  color:var(--cta);cursor:pointer;font-family:var(--font-body);font-weight:700;font-size:13px;
+  white-space:nowrap;transition:all .15s}
+.vin-nudge .go:hover{background:var(--cta);color:#fff}
+.hint{color:var(--g700);font-size:13px;padding:8px 0}
+
+/* ── 결과 카드 ── */
+.result-card{margin-top:16px;background:#fff;border:1px solid var(--g300);border-radius:8px;
+  overflow:hidden}
+.result-head{padding:18px 16px 14px;border-bottom:1px solid var(--g200)}
+.result-title{font-family:var(--font-brand);font-weight:700;font-size:18px;color:var(--g900)}
+.result-sub{font-size:13px;color:var(--g700);margin-top:4px}
+.result-body{padding:16px}
+.sec-title{font-size:14px;font-weight:700;color:var(--g900);margin-bottom:10px}
+.sec-title .caption{font-weight:400;font-size:12px;color:var(--g500);margin-left:6px}
+
+/* 점도 = 가격급 강조 (GDS: 가격은 Black) */
+.visc-line{display:flex;align-items:baseline;gap:8px;margin-bottom:12px}
+.visc-value{font-family:var(--font-brand);font-weight:700;font-size:28px;color:#000}
+.visc-badge{font-size:11px;font-weight:700;padding:4px 8px;border-radius:4px;
+  background:var(--green-50);color:var(--green-700)}
+
+.spec-list{border-top:1px solid var(--g200)}
+.spec-row{display:flex;justify-content:space-between;gap:14px;padding:10px 0;
+  border-bottom:1px solid var(--g200);font-size:14px}
+.spec-row dt{color:var(--g700);white-space:nowrap}
+.spec-row dd{font-weight:700;color:var(--g900);text-align:right}
+
+/* ── 상품 카드 (GDS Item cards) ── */
+.prod-strip{display:flex;gap:12px;overflow-x:auto;padding:14px 0 6px;scroll-snap-type:x mandatory}
+.prod-card{flex:0 0 156px;scroll-snap-align:start;display:flex;flex-direction:column;gap:6px;
+  text-decoration:none;color:var(--g900);transition:transform .15s}
+.prod-card:hover{transform:translateY(-2px)}
+.prod-thumb{height:112px;border-radius:8px;background:var(--g50);border:1px solid var(--g200);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-brand);font-weight:700;font-size:14px;color:var(--g400)}
+.prod-name{font-size:13px;line-height:1.45;color:var(--g900);
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.prod-price{font-weight:700;font-size:16px;color:#000}
+.prod-price .won{font-weight:400;font-size:13px}
+.prod-delivery{font-size:11px;font-weight:700;color:var(--green-600)}
+.prod-note{font-size:11px;color:var(--g400);margin-top:4px}
+.more-card{justify-content:center;align-items:center;gap:10px;
+  border:1px dashed var(--g400);border-radius:8px;min-height:112px}
+.more-card:hover{border-color:var(--cta)}
+.more-arrow{width:36px;height:36px;border-radius:50%;background:var(--g100);color:var(--cta);
+  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px}
+.more-card:hover .more-arrow{background:var(--cta);color:#fff}
+.more-text{font-size:13px;font-weight:700;color:var(--g800);text-align:center;line-height:1.4}
+.more-link{display:inline-block;margin-top:10px;font-size:13px;font-weight:700;
+  color:var(--cta);text-decoration:none}
+.more-link:hover{text-decoration:underline}
+
+/* ── 필터 품번 리스트 ── */
+.pn-list{display:flex;flex-wrap:wrap;gap:8px}
+.pn-item{display:flex;flex-direction:column;align-items:flex-start;gap:2px;
+  padding:10px 14px;border:1px solid var(--g300);border-radius:8px;background:#fff;
+  cursor:pointer;font-family:var(--font-body);text-align:left;transition:all .15s}
+.pn-item:hover{border-color:var(--g500)}
+.pn-item[aria-pressed="true"]{background:var(--green-50);border-color:var(--green-500)}
+.pn-item[aria-pressed="true"] .pn-brand{color:var(--green-600)}
+.pn-item[aria-pressed="true"] .pn-num{color:var(--green-700)}
+.pn-item:focus-visible{outline:2px solid var(--cta);outline-offset:2px}
+.pn-brand{font-size:11px;color:var(--g500)}
+.pn-num{font-weight:700;font-size:15px;color:var(--g900)}
+
+/* ── 신뢰도 배지 (GDS Badges: semantic) ── */
+.section-divider{height:1px;background:var(--g200);margin:20px -16px}
+.trust{display:flex;align-items:flex-start;gap:8px;margin-top:16px;padding:12px 14px;
+  border-radius:8px;font-size:12px;line-height:1.6}
+.trust.v{background:var(--green-50);color:var(--green-700)}
+.trust.e{background:var(--orange-50);color:var(--orange-700)}
+.trust .badge{flex:0 0 auto;font-weight:700;font-size:11px;padding:3px 8px;border-radius:4px;
+  background:#fff;margin-top:1px}
+
+footer{margin-top:28px;font-size:11px;color:var(--g400);line-height:1.7}
+.hidden{display:none}
+@media (prefers-reduced-motion:no-preference){
+  .result-card{animation:cardIn .3s ease-out}
+  @keyframes cardIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <h1 class="brand">오일파인더<span class="dot">.</span></h1>
+    <p class="tagline">차종을 고르거나 차대번호를 입력하면, 제조사 규격에 맞는 엔진오일과 오일필터 품번을 알려드려요.</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+<div class="card" id="finder-card">
+  <div class="tabs" role="tablist">
+    <button class="tab" id="tab-select" role="tab" aria-selected="true" aria-controls="panel-select">차종으로 찾기</button>
+    <button class="tab" id="tab-vin" role="tab" aria-selected="false" aria-controls="panel-vin">차대번호(VIN)로 찾기</button>
+  </div>
+
+  <div class="panel" id="panel-select" role="tabpanel">
+    <div class="sum-bar hidden" id="sum-bar" aria-label="선택한 항목"></div>
+    <div id="step-mfr">
+      <span class="step-label"><span class="num">STEP 1</span> 제조사를 선택해 주세요</span>
+      <div class="choices" id="mfr-choices"></div>
+    </div>
+    <div id="step-model" class="hidden">
+      <span class="step-label"><span class="num">STEP 2</span> 모델을 선택해 주세요</span>
+      <div class="choices" id="model-choices"></div>
+    </div>
+    <div id="step-year" class="hidden">
+      <span class="step-label"><span class="num">STEP 3</span> 연식을 선택해 주세요</span>
+      <div class="choices" style="align-items:center">
+        <select id="year-select" class="chip" aria-label="연식 선택">
+          <option value="">몇 년식인가요?</option>
+        </select>
+        <button class="chip" id="year-unknown">잘 모르겠어요</button>
+      </div>
+    </div>
+    <div id="step-engine" class="hidden">
+      <span class="step-label"><span class="num">STEP 4</span> 엔진 · 트림을 선택해 주세요</span>
+      <div class="engine-list" id="engine-list"></div>
+    </div>
+  </div>
+
+  <div class="panel hidden" id="panel-vin" role="tabpanel">
+    <span class="step-label">차대번호 17자리</span>
+    <div class="vin-row">
+      <input class="vin-input" id="vin-input" maxlength="17" placeholder="KMHL341ABPA123456" autocomplete="off" spellcheck="false" aria-label="차대번호 입력">
+      <button class="btn-cta" id="vin-btn">해석</button>
+    </div>
+    <p class="vin-help">차대번호는 자동차등록증, 또는 운전석 쪽 앞유리 하단·문기둥 라벨에서 확인할 수 있어요. 소유자 정보 없이 차량 자체 정보만 해석합니다.</p>
+    <div id="vin-result"></div>
+  </div>
+</div>
+
+<div id="result"></div>
+
+<footer>
+  본 정보는 취급설명서·부품몰 공개 데이터를 정리한 참고용입니다. 실제 정비 전 차량 취급설명서 또는 정비소에서 규격을 최종 확인하세요.<br>
+  이 서비스는 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받을 수 있습니다.
+</footer>
+</div>
+
+<script>
+const DATA = __DATA__;
+const PRODUCT_CACHE = __CACHE__;
+const CACHE_DATE = "__CACHE_DATE__";
+
+const WMI = {
+  "KMH":"현대","KM8":"현대","KMF":"현대",
+  "KNA":"기아","KND":"기아","KNC":"기아","KNH":"기아",
+  "KMT":"현대",
+  "WDD":"벤츠","WDC":"벤츠","W1K":"벤츠","W1N":"벤츠","W1V":"벤츠",
+  "WBA":"BMW","WBS":"BMW","WBY":"BMW","WBX":"BMW",
+  "WAU":"아우디","WA1":"아우디",
+  "JTH":"렉서스","JTJ":"렉서스","JTE":"렉서스",
+  "KPT":"KGM","KPA":"KGM",
+  "KNM":"르노코리아","VF1":"르노코리아",
+  "KL1":"한국GM","KL4":"한국GM","KL7":"한국GM","KLY":"한국GM"
+};
+const YEAR_CODE = {A:2010,B:2011,C:2012,D:2013,E:2014,F:2015,G:2016,H:2017,J:2018,K:2019,L:2020,M:2021,N:2022,P:2023,R:2024,S:2025,T:2026,V:2027,W:2028,X:2029,Y:2030};
+
+const $ = s => document.querySelector(s);
+let sel = {mfr:null, model:null, year:null, yearKnown:null, engine:null};
+const STEPS = ["mfr","model","year","engine"];
+
+function scrollToCard(){
+  document.getElementById("finder-card").scrollIntoView({behavior:"smooth", block:"start"});
+}
+function goStep(step){
+  STEPS.forEach(s=>{
+    const el = document.getElementById("step-"+s);
+    if(el) el.classList.toggle("hidden", s!==step);
+  });
+  renderSummary();
+  $("#result").innerHTML = "";
+  scrollToCard();
+}
+function resetFrom(step){
+  const i = STEPS.indexOf(step);
+  if(i<=0){ sel.mfr=null; }
+  if(i<=1){ sel.model=null; }
+  if(i<=2){ sel.year=null; sel.yearKnown=null; }
+  sel.engine=null;
+}
+function renderSummary(){
+  const chips = [];
+  if(sel.mfr)   chips.push({step:"mfr",   label:sel.mfr});
+  if(sel.model) chips.push({step:"model", label:sel.model});
+  if(sel.yearKnown!==null) chips.push({step:"year", label: sel.year ? sel.year+"년식" : "연식 모름"});
+  if(sel.engine) chips.push({step:"engine", label:sel.engine});
+  const bar = $("#sum-bar");
+  bar.classList.toggle("hidden", chips.length===0);
+  bar.innerHTML = chips.map(c=>
+    `<button class="sum-chip" data-step="${c.step}">${c.label} <span class="edit">수정</span></button>`).join("");
+  bar.querySelectorAll(".sum-chip").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      const step = b.dataset.step;
+      resetFrom(step);
+      if(step==="mfr"){ goStep("mfr"); }
+      else if(step==="model"){ renderModels(); goStep("model"); }
+      else if(step==="year"){ renderYearStep(); goStep("year"); }
+      else { renderEngines(sel.year, sel.yearKnown===false); goStep("engine"); }
+    });
+  });
+}
+
+const MFR_GROUPS = [
+  {label:"국산", brands:["현대","기아","KGM","르노코리아","한국GM"]},
+  {label:"수입", brands:["벤츠","BMW","아우디","렉서스"]}
+];
+function renderMfrs(){
+  const avail = new Set(DATA.map(v=>v.mfr));
+  $("#mfr-choices").innerHTML = MFR_GROUPS.map(g=>{
+    const brands = g.brands.filter(b=>avail.has(b));
+    if(!brands.length) return "";
+    return `<div class="group-block"><div class="gen-head">${g.label}</div>
+      <div class="group-chips">${brands.map(m=>
+        `<button class="chip" aria-pressed="false" data-mfr="${m}">${m}</button>`).join("")}</div></div>`;
+  }).join("");
+  $("#mfr-choices").querySelectorAll(".chip").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      resetFrom("mfr");
+      sel.mfr = b.dataset.mfr;
+      $("#mfr-choices").querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed", x===b));
+      renderModels();
+      goStep("model");
+    });
+  });
+}
+const CAT_ORDER = ["세단","SUV","소형차","미니밴"];
+function renderModels(){
+  const list = DATA.filter(v=>v.mfr===sel.mfr);
+  const byCat = {};
+  for(const v of list){
+    const c = v.cat || "기타";
+    (byCat[c] = byCat[c] || new Set()).add(v.model);
+  }
+  $("#model-choices").innerHTML = CAT_ORDER.filter(c=>byCat[c]).map(c=>
+    `<div class="group-block"><div class="gen-head">${c}</div>
+      <div class="group-chips">${[...byCat[c]].map(m=>
+        `<button class="chip" aria-pressed="false" data-model="${m}">${m}</button>`).join("")}</div></div>`
+  ).join("");
+  $("#model-choices").querySelectorAll(".chip").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      resetFrom("model");
+      sel.model = b.dataset.model;
+      $("#model-choices").querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed", x===b));
+      renderYearStep();
+      goStep("year");
+    });
+  });
+}
+function renderYearStep(){
+  const nowY = new Date().getFullYear();
+  const selEl = $("#year-select");
+  selEl.innerHTML = '<option value="">몇 년식인가요?</option>' +
+    Array.from({length:nowY-2000+1},(_,i)=>nowY-i)
+      .map(y=>`<option value="${y}">${y}년식</option>`).join("");
+  selEl.value = "";
+  selEl.onchange = ()=>{
+    if(!selEl.value) return;
+    sel.year = +selEl.value; sel.yearKnown = true;
+    renderEngines(sel.year);
+    goStep("engine");
+  };
+  $("#year-unknown").onclick = ()=>{
+    sel.year = null; sel.yearKnown = false;
+    renderEngines(null, true);
+    goStep("engine");
+  };
+}
+function fuelClass(f){ return f==="하이브리드" ? "fuel hev" : (f==="디젤" ? "fuel dsl" : "fuel"); }
+function engineRow(v){
+  const yr = v.ye ? `${v.ys}–${v.ye}` : `${v.ys}–현재`;
+  const trim = v.trim && v.trim !== "기본" ? ` · ${v.trim}` : "";
+  return `<button class="engine-item" data-id="${v.id}">
+    <span><span class="en">${v.engine}${trim}</span><br>
+    <span class="meta">${v.gen} · ${yr}${v.cc ? " · "+v.cc.toLocaleString()+"cc" : ""}</span></span>
+    <span class="${fuelClass(v.fuel)}">${v.fuel}</span>
+  </button>`;
+}
+function bindEngineList(container, fromVin){
+  container.querySelectorAll(".engine-item").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      const v = DATA.find(x=>x.id===+b.dataset.id);
+      if(!fromVin){
+        sel.engine = v.engine + (v.trim && v.trim!=="기본" ? " · "+v.trim : "");
+        STEPS.forEach(s=>document.getElementById("step-"+s).classList.add("hidden"));
+        renderSummary();
+      }
+      showResult(v.id);
+    });
+  });
+}
+const NUDGE = (id)=>`<div class="vin-nudge" role="note">
+  <span>조금 더 정확하게 확인하려면 <strong>차대번호</strong>로 조회해 보세요. 자동차등록증이나 운전석 쪽 앞유리 하단에서 확인할 수 있어요.</span>
+  <button class="go" id="${id}">차대번호로 찾기 →</button></div>`;
+function bindNudge(id){
+  const el = document.getElementById(id);
+  if(el) el.addEventListener("click", ()=>{ switchTab("vin"); $("#vin-input").focus(); });
+}
+function renderEngines(year, showVinNudge){
+  let list = DATA.filter(v=>v.mfr===sel.mfr && v.model===sel.model);
+  if(year) list = list.filter(v=>v.ys<=year && (v.ye===null || v.ye>=year));
+  if(!list.length){
+    $("#engine-list").innerHTML = `<p class="hint">${year}년식 ${sel.model} 데이터는 아직 준비 중이에요. 요약 바의 연식을 눌러 "잘 모르겠어요"로 전체 세대를 보거나, 취급설명서를 확인해 주세요.</p>` + NUDGE("go-vin-empty");
+    bindNudge("go-vin-empty");
+    return;
+  }
+  const gens = [...new Set(list.map(v=>v.gen))];
+  let out = "";
+  for(const g of gens){
+    const sub = list.filter(v=>v.gen===g);
+    const yr = sub[0].ye ? `${Math.min(...sub.map(v=>v.ys))}–${Math.max(...sub.map(v=>v.ye??0))}` : `${Math.min(...sub.map(v=>v.ys))}–현재`;
+    if(gens.length>1) out += `<div class="gen-head">${g} 세대 (${yr})</div>`;
+    out += sub.map(engineRow).join("");
+  }
+  $("#engine-list").innerHTML = (showVinNudge ? NUDGE("go-vin") : "") + out;
+  bindEngineList($("#engine-list"));
+  if(showVinNudge) bindNudge("go-vin");
+}
+
+function decodeVIN(){
+  const raw = $("#vin-input").value.trim().toUpperCase().replace(/\s/g,"");
+  const out = $("#vin-result");
+  $("#result").innerHTML = "";
+  if(raw.length !== 17){ out.innerHTML = `<div class="info-box red">차대번호는 17자리여야 해요. (현재 ${raw.length}자리)</div>`; return; }
+  if(/[IOQ]/.test(raw)){ out.innerHTML = `<div class="info-box red">차대번호에는 I·O·Q가 쓰이지 않아요. 숫자 1·0과 혼동하지 않았는지 확인해 주세요.</div>`; return; }
+  const mfr = WMI[raw.slice(0,3)] || null;
+  const year = YEAR_CODE[raw[9]] || null;
+  if(!mfr){
+    out.innerHTML = `<div class="info-box blue">제조사 코드 <strong>${raw.slice(0,3)}</strong>는 아직 등록되지 않았어요. "차종으로 찾기"에서 직접 선택해 주세요.</div>`;
+    return;
+  }
+  let cands = DATA.filter(v => v.mfr === mfr);
+  if(year) cands = cands.filter(v => v.ys <= year && (v.ye === null || v.ye >= year));
+  out.innerHTML = `
+    <div class="info-box blue">해석 결과 — 제조사 <strong>${mfr}</strong>${year ? ` · 연식 <strong>${year}년형</strong>` : " · 연식 코드 미확인"}<br>
+    ${cands.length ? "아래 후보 중 내 차를 선택하면 규격을 보여드려요." : "해당 연식의 차량 데이터가 아직 없어요."}</div>
+    ${cands.length ? `<div class="engine-list" style="margin-top:12px">${cands.map(v=>{
+      const row = engineRow(v);
+      return row.replace('<span class="en">', `<span class="en">${v.model} · `);
+    }).join("")}</div>` : ""}`;
+  bindEngineList(out, true);
+}
+$("#vin-btn").addEventListener("click", decodeVIN);
+$("#vin-input").addEventListener("keydown", e=>{ if(e.key==="Enter") decodeVIN(); });
+
+function stripHTML(items, searchUrl){
+  if(!items || !items.length){
+    return `<a class="more-link" href="${searchUrl}" target="_blank" rel="noopener">쿠팡 전체 검색결과 보기 →</a>`;
+  }
+  return `<div class="prod-strip" role="list" aria-label="쿠팡 상품 목록">
+    ${items.map(p=>`<a class="prod-card" role="listitem" href="${p.url}" target="_blank" rel="noopener">
+      <span class="prod-thumb">OIL</span>
+      <span class="prod-name">${p.name}</span>
+      <span class="prod-price">${p.price ? p.price.toLocaleString()+'<span class="won">원</span>' : ""}</span>
+      ${p.rocket ? '<span class="prod-delivery">🚀 로켓배송</span>' : ""}
+    </a>`).join("")}
+    <a class="prod-card more-card" href="${searchUrl}" target="_blank" rel="noopener">
+      <span class="more-arrow">→</span>
+      <span class="more-text">전체 검색결과<br>보기</span>
+    </a>
+  </div>
+  <p class="prod-note">가격·상품 정보는 ${CACHE_DATE} 기준이며 실제와 다를 수 있어요.${items.some(p=>!p.manual) ? " (일부 예시 데이터)" : ""}</p>`;
+}
+function productStrip(keyword){
+  return stripHTML(PRODUCT_CACHE[keyword],
+    "https://www.coupang.com/np/search?q=" + encodeURIComponent(keyword));
+}
+
+// ── 오일필터: 브랜드 선택 → 상품 리스트 연동 ──
+let resultVehicle = null;
+let selectedPn = null;   // null = 전체
+function renderFilterProducts(){
+  const v = resultVehicle;
+  if(!v) return;
+  let items, searchPn;
+  if(selectedPn){
+    items = PRODUCT_CACHE[selectedPn + " 오일필터"] || [];
+    searchPn = selectedPn;
+  } else {
+    items = v.filters.flatMap(f => PRODUCT_CACHE[f.pn + " 오일필터"] || []);
+    const oe = v.filters.find(f=>f.brand.includes("OE"));
+    searchPn = oe ? oe.pn : (v.filters[0] ? v.filters[0].pn : "오일필터");
+  }
+  const area = document.getElementById("filter-strip-area");
+  if(area) area.innerHTML = stripHTML(items,
+    "https://www.coupang.com/np/search?q=" + encodeURIComponent(searchPn + " 오일필터"));
+}
+function bindPnChips(){
+  document.querySelectorAll(".pn-item").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      const pn = b.dataset.pn;
+      selectedPn = (selectedPn === pn) ? null : pn;   // 재클릭 시 전체로 토글
+      document.querySelectorAll(".pn-item").forEach(x=>
+        x.setAttribute("aria-pressed", x.dataset.pn === selectedPn));
+      renderFilterProducts();
+    });
+  });
+}
+
+function showResult(id){
+  const v = DATA.find(x=>x.id===id);
+  const o = v.oil;
+  const yr = v.ye ? `${v.ys}–${v.ye}` : `${v.ys}–현재`;
+  const grades = [o.api ? "API "+o.api : null, o.ilsac ? "ILSAC "+o.ilsac : null].filter(Boolean).join(" · ");
+  const specRows = o.visc ? `
+    <div class="spec-row"><dt>오일 종류</dt><dd>${o.type ?? "—"}</dd></div>
+    ${grades ? `<div class="spec-row"><dt>품질 등급</dt><dd>${grades}</dd></div>` : ""}
+    <div class="spec-row"><dt>주입량 (필터 포함)</dt><dd>${o.cap} L</dd></div>
+    <div class="spec-row"><dt>표준 교환주기</dt><dd>${o.interval.toLocaleString()} km</dd></div>
+    <div class="spec-row"><dt>가혹조건 주기</dt><dd>${o.severe.toLocaleString()} km</dd></div>`
+    : `<div class="spec-row"><dt>엔진오일 스펙</dt><dd>데이터 준비 중</dd></div>`;
+  const oe = v.filters.find(f=>f.brand.includes("OE"));
+
+  $("#result").innerHTML = `
+  <section class="result-card" aria-label="차량 규격 정보">
+    <div class="result-head">
+      <div class="result-title">${v.mfr} ${v.model} ${v.gen}${v.trim!=="기본" ? " · "+v.trim : ""}</div>
+      <div class="result-sub">${v.engine} · ${yr}${v.cc ? " · "+v.cc.toLocaleString()+"cc" : ""}</div>
+    </div>
+    <div class="result-body">
+
+      <div class="spec-section">
+        <div class="sec-title">엔진오일</div>
+        <div class="visc-line">
+          <span class="visc-value">${o.visc ?? "N/A"}</span>
+          ${o.visc ? '<span class="visc-badge">제조사 권장 점도</span>' : ""}
+        </div>
+        <dl class="spec-list">${specRows}</dl>
+        ${o.visc ? productStrip(o.visc + " 합성 엔진오일") : ""}
+      </div>
+
+      <div class="section-divider"></div>
+
+      <div class="spec-section">
+        <div class="sec-title">오일필터</div>
+        <div class="visc-line">
+          <span class="visc-value">${oe ? oe.pn : (v.filters[0] ? v.filters[0].pn : "확인 필요")}</span>
+          ${oe ? '<span class="visc-badge">순정(OE) 품번</span>' : ""}
+        </div>
+        <div class="pn-list">
+          ${v.filters.length ? v.filters.map(f=>`<button class="pn-item" aria-pressed="false" data-pn="${f.pn}">
+            <span class="pn-brand">${f.brand}</span>
+            <span class="pn-num">${f.pn}</span></button>`).join("")
+          : '<p class="hint">필터 품번 데이터 준비 중 — 정비소 또는 취급설명서를 확인해 주세요.</p>'}
+        </div>
+        <div id="filter-strip-area"></div>
+      </div>
+
+      <div class="trust ${o.verified ? "v":"e"}">
+        <span class="badge">${o.verified ? "검증됨":"추정치"}</span>
+        <span>${o.verified
+          ? "취급설명서·순정부품몰에서 확인된 규격이에요."
+          : "동일 엔진 계열에서 추정한 값이 포함되어 있어요. 정비 전 취급설명서로 최종 확인해 주세요."}</span>
+      </div>
+    </div>
+  </section>`;
+  resultVehicle = v;
+  selectedPn = null;
+  bindPnChips();
+  renderFilterProducts();
+  $("#result").scrollIntoView({behavior:"smooth", block:"start"});
+}
+
+renderMfrs();
+</script>
+</body>
+</html>

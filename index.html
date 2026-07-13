@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>오일 파인더 — 내 차 엔진오일·필터 규격 찾기</title>
+<style>
+/* ── G마켓 산스 ── */
+@font-face{font-family:'GmarketSans';font-weight:500;font-style:normal;
+  src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff') format('woff')}
+@font-face{font-family:'GmarketSans';font-weight:700;font-style:normal;
+  src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansBold.woff') format('woff')}
+
+/* ── GDS Foundation 토큰 ── */
+:root{
+  --green-700:#018600; --green-600:#01A900; --green-500:#00C400; --green-100:#A5F4A0; --green-50:#E5FCE3;
+  --blue-700:#0048C8; --blue-500:#067DFD; --blue-50:#EEF7FF;
+  --red-500:#EF2B2A; --red-50:#FFF5F5;
+  --orange-700:#B43200; --orange-500:#F9560E; --orange-50:#FFF6F2;
+  --cta:#0028AC;
+  --g900:#222222; --g800:#424242; --g700:#616161; --g500:#9E9E9E; --g400:#BDBDBD;
+  --g300:#E0E0E0; --g200:#EEEEEE; --g100:#F5F5F5; --g50:#FAFAFA;
+  --font-brand:'GmarketSans','Apple SD Gothic Neo','Noto Sans KR',sans-serif;
+  --font-body:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-body);background:var(--g100);color:var(--g900);
+  min-height:100vh;padding:0 0 64px;font-size:15px;line-height:1.5}
+.wrap{max-width:640px;margin:0 auto;padding:0 16px}
+
+/* ── 헤더 ── */
+header{background:#fff;border-bottom:1px solid var(--g200);padding:18px 0 16px;margin-bottom:16px}
+header .wrap{display:flex;flex-direction:column;gap:4px}
+.brand{font-family:var(--font-brand);font-weight:700;font-size:22px;color:var(--g900);letter-spacing:-.01em}
+.brand .dot{color:var(--green-500)}
+.tagline{font-size:13px;color:var(--g700)}
+
+/* ── 카드 공통 ── */
+.card{background:#fff;border:1px solid var(--g300);border-radius:8px;overflow:hidden}
+
+/* ── 탭 (GDS Tabs: 언더라인) ── */
+.tabs{display:flex;border-bottom:1px solid var(--g200)}
+.tab{flex:1;padding:14px 8px;text-align:center;cursor:pointer;background:#fff;border:none;
+  font-family:var(--font-body);font-size:15px;font-weight:500;color:var(--g500);
+  border-bottom:2px solid transparent;transition:color .15s}
+.tab[aria-selected="true"]{color:var(--g900);font-weight:700;border-bottom-color:var(--g900)}
+.tab:focus-visible{outline:2px solid var(--cta);outline-offset:-2px}
+.panel{padding:20px 16px}
+
+/* ── 선택 요약 바 (sticky) ── */
+.sum-bar{position:sticky;top:0;z-index:5;display:flex;flex-wrap:wrap;gap:6px;
+  background:#fff;padding:0 0 12px;margin-bottom:14px;border-bottom:1px solid var(--g200)}
+.sum-chip{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;
+  border:1px solid var(--green-500);background:var(--green-50);color:var(--green-700);
+  font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font-body);transition:all .15s}
+.sum-chip .edit{font-weight:400;font-size:11px;color:var(--green-600)}
+.sum-chip:hover{background:#fff}
+.sum-chip:focus-visible{outline:2px solid var(--cta);outline-offset:2px}
+
+/* ── 스텝 라벨 ── */
+.step-label{display:block;font-size:12px;font-weight:700;color:var(--g700);margin-bottom:8px}
+.step-label .num{color:var(--green-600)}
+
+/* ── 칩 (GDS Chips: 선택 시 그린) ── */
+.choices{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.choices .group-block{width:100%}
+.group-chips{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 10px}
+.chip{padding:8px 14px;border:1px solid var(--g300);border-radius:999px;background:#fff;
+  cursor:pointer;font-family:var(--font-body);font-size:14px;color:var(--g800);transition:all .15s}
+.chip:hover{border-color:var(--g500)}
+.chip[aria-pressed="true"]{background:var(--green-50);border-color:var(--green-500);
+  color:var(--green-700);font-weight:700}
+.chip:focus-visible{outline:2px solid var(--cta);outline-offset:2px}
+
+/* ── 드롭다운 (GDS Dropdowns) ── */
+select.chip{border-radius:8px;padding:10px 32px 10px 12px;appearance:none;
+  background:#fff url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8"><path d="M1 1l5 5 5-5" stroke="%23616161" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>') no-repeat right 12px center}
+
+/* ── 엔진 리스트 (GDS Lists) ── */
+.engine-list{display:flex;flex-direction:column;gap:8px;margin-bottom:4px}
+.gen-head{font-size:12px;font-weight:700;color:var(--g500);margin:8px 0 2px}
+.engine-item{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;
+  padding:14px;border:1px solid var(--g300);border-radius:8px;background:#fff;cursor:pointer;
+  text-align:left;font-family:var(--font-body);transition:border-color .15s}
+.engine-item:hover{border-color:var(--g900)}
+.engine-item:focus-visible{outline:2px solid var(--cta);outline-offset:2px}
+.engine-item .en{font-weight:700;font-size:14px;color:var(--g900)}
+.engine-item .meta{color:var(--g500);font-size:12px;margin-top:3px}
+.fuel{font-size:11px;font-weight:700;padding:4px 8px;border-radius:4px;
+  background:var(--g100);color:var(--g700);white-space:nowrap}
+.fuel.hev{background:var(--green-50);color:var(--green-700)}
+.fuel.dsl{background:var(--g800);color:#fff}
+
+/* ── VIN 패널 (GDS Text Fields + CTA Button) ── */
+.vin-row{display:flex;gap:8px}
+.vin-input{flex:1;padding:12px 14px;border:1px solid var(--g300);border-radius:8px;
+  font-family:var(--font-body);font-size:15px;font-weight:600;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--g900);background:#fff}
+.vin-input::placeholder{color:var(--g400);font-weight:400}
+.vin-input:focus{outline:none;border-color:var(--g900)}
+.btn-cta{padding:12px 20px;border:none;border-radius:8px;cursor:pointer;
+  font-family:var(--font-body);font-weight:700;font-size:15px;background:var(--cta);color:#fff;
+  transition:opacity .15s}
+.btn-cta:hover{opacity:.9}
+.btn-cta:focus-visible{outline:2px solid var(--g900);outline-offset:2px}
+.vin-help{margin-top:10px;font-size:12px;color:var(--g500);line-height:1.6}
+.info-box{margin-top:14px;padding:12px 14px;border-radius:8px;font-size:13px;line-height:1.6}
+.info-box.blue{background:var(--blue-50);color:var(--blue-700)}
+.info-box.red{background:var(--red-50);color:var(--red-500)}
+.info-box strong{font-weight:700}
+
+/* ── VIN 유도 배너 (GDS Info boxes: Informative) ── */
+.vin-nudge{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:12px;
+  padding:12px 14px;border-radius:8px;background:var(--blue-50);
+  font-size:13px;line-height:1.55;color:var(--g800)}
+.vin-nudge strong{color:var(--blue-700)}
+.vin-nudge .go{padding:8px 14px;border:1px solid var(--cta);border-radius:8px;background:#fff;
+  color:var(--cta);cursor:pointer;font-family:var(--font-body);font-weight:700;font-size:13px;
+  white-space:nowrap;transition:all .15s}
+.vin-nudge .go:hover{background:var(--cta);color:#fff}
+.hint{color:var(--g700);font-size:13px;padding:8px 0}
+
+/* ── 결과 카드 ── */
+.result-card{margin-top:16px;background:#fff;border:1px solid var(--g300);border-radius:8px;
+  overflow:hidden}
+.result-head{padding:18px 16px 14px;border-bottom:1px solid var(--g200)}
+.result-title{font-family:var(--font-brand);font-weight:700;font-size:18px;color:var(--g900)}
+.result-sub{font-size:13px;color:var(--g700);margin-top:4px}
+.result-body{padding:16px}
+.sec-title{font-size:14px;font-weight:700;color:var(--g900);margin-bottom:10px}
+.sec-title .caption{font-weight:400;font-size:12px;color:var(--g500);margin-left:6px}
+
+/* 점도 = 가격급 강조 (GDS: 가격은 Black) */
+.visc-line{display:flex;align-items:baseline;gap:8px;margin-bottom:12px}
+.visc-value{font-family:var(--font-brand);font-weight:700;font-size:28px;color:#000}
+.visc-badge{font-size:11px;font-weight:700;padding:4px 8px;border-radius:4px;
+  background:var(--green-50);color:var(--green-700)}
+
+.spec-list{border-top:1px solid var(--g200)}
+.spec-row{display:flex;justify-content:space-between;gap:14px;padding:10px 0;
+  border-bottom:1px solid var(--g200);font-size:14px}
+.spec-row dt{color:var(--g700);white-space:nowrap}
+.spec-row dd{font-weight:700;color:var(--g900);text-align:right}
+
+/* ── 상품 카드 (GDS Item cards) ── */
+.prod-strip{display:flex;gap:12px;overflow-x:auto;padding:14px 0 6px;scroll-snap-type:x mandatory}
+.prod-card{flex:0 0 156px;scroll-snap-align:start;display:flex;flex-direction:column;gap:6px;
+  text-decoration:none;color:var(--g900);transition:transform .15s}
+.prod-card:hover{transform:translateY(-2px)}
+.prod-thumb{height:112px;border-radius:8px;background:var(--g50);border:1px solid var(--g200);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-brand);font-weight:700;font-size:14px;color:var(--g400)}
+.prod-name{font-size:13px;line-height:1.45;color:var(--g900);
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.prod-price{font-weight:700;font-size:16px;color:#000}
+.prod-price .won{font-weight:400;font-size:13px}
+.prod-delivery{font-size:11px;font-weight:700;color:var(--green-600)}
+.prod-note{font-size:11px;color:var(--g400);margin-top:4px}
+.more-card{justify-content:center;align-items:center;gap:10px;
+  border:1px dashed var(--g400);border-radius:8px;min-height:112px}
+.more-card:hover{border-color:var(--cta)}
+.more-arrow{width:36px;height:36px;border-radius:50%;background:var(--g100);color:var(--cta);
+  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px}
+.more-card:hover .more-arrow{background:var(--cta);color:#fff}
+.more-text{font-size:13px;font-weight:700;color:var(--g800);text-align:center;line-height:1.4}
+.more-link{display:inline-block;margin-top:10px;font-size:13px;font-weight:700;
+  color:var(--cta);text-decoration:none}
+.more-link:hover{text-decoration:underline}
+
+/* ── 필터 품번 리스트 ── */
+.pn-list{display:flex;flex-wrap:wrap;gap:8px}
+.pn-item{display:flex;flex-direction:column;align-items:flex-start;gap:2px;
+  padding:10px 14px;border:1px solid var(--g300);border-radius:8px;background:#fff;
+  cursor:pointer;font-family:var(--font-body);text-align:left;transition:all .15s}
+.pn-item:hover{border-color:var(--g500)}
+.pn-item[aria-pressed="true"]{background:var(--green-50);border-color:var(--green-500)}
+.pn-item[aria-pressed="true"] .pn-brand{color:var(--green-600)}
+.pn-item[aria-pressed="true"] .pn-num{color:var(--green-700)}
+.pn-item:focus-visible{outline:2px solid var(--cta);outline-offset:2px}
+.pn-brand{font-size:11px;color:var(--g500)}
+.pn-num{font-weight:700;font-size:15px;color:var(--g900)}
+
+/* ── 신뢰도 배지 (GDS Badges: semantic) ── */
+.section-divider{height:1px;background:var(--g200);margin:20px -16px}
+.trust{display:flex;align-items:flex-start;gap:8px;margin-top:16px;padding:12px 14px;
+  border-radius:8px;font-size:12px;line-height:1.6}
+.trust.v{background:var(--green-50);color:var(--green-700)}
+.trust.e{background:var(--orange-50);color:var(--orange-700)}
+.trust .badge{flex:0 0 auto;font-weight:700;font-size:11px;padding:3px 8px;border-radius:4px;
+  background:#fff;margin-top:1px}
+
+footer{margin-top:28px;font-size:11px;color:var(--g400);line-height:1.7}
+.hidden{display:none}
+@media (prefers-reduced-motion:no-preference){
+  .result-card{animation:cardIn .3s ease-out}
+  @keyframes cardIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <h1 class="brand">오일파인더<span class="dot">.</span></h1>
+    <p class="tagline">차종을 고르거나 차대번호를 입력하면, 제조사 규격에 맞는 엔진오일과 오일필터 품번을 알려드려요.</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+<div class="card" id="finder-card">
+  <div class="tabs" role="tablist">
+    <button class="tab" id="tab-select" role="tab" aria-selected="true" aria-controls="panel-select">차종으로 찾기</button>
+    <button class="tab" id="tab-vin" role="tab" aria-selected="false" aria-controls="panel-vin">차대번호(VIN)로 찾기</button>
+  </div>
+
+  <div class="panel" id="panel-select" role="tabpanel">
+    <div class="sum-bar hidden" id="sum-bar" aria-label="선택한 항목"></div>
+    <div id="step-mfr">
+      <span class="step-label"><span class="num">STEP 1</span> 제조사를 선택해 주세요</span>
+      <div class="choices" id="mfr-choices"></div>
+    </div>
+    <div id="step-model" class="hidden">
+      <span class="step-label"><span class="num">STEP 2</span> 모델을 선택해 주세요</span>
+      <div class="choices" id="model-choices"></div>
+    </div>
+    <div id="step-year" class="hidden">
+      <span class="step-label"><span class="num">STEP 3</span> 연식을 선택해 주세요</span>
+      <div class="choices" style="align-items:center">
+        <select id="year-select" class="chip" aria-label="연식 선택">
+          <option value="">몇 년식인가요?</option>
+        </select>
+        <button class="chip" id="year-unknown">잘 모르겠어요</button>
+      </div>
+    </div>
+    <div id="step-engine" class="hidden">
+      <span class="step-label"><span class="num">STEP 4</span> 엔진 · 트림을 선택해 주세요</span>
+      <div class="engine-list" id="engine-list"></div>
+    </div>
+  </div>
+
+  <div class="panel hidden" id="panel-vin" role="tabpanel">
+    <span class="step-label">차대번호 17자리</span>
+    <div class="vin-row">
+      <input class="vin-input" id="vin-input" maxlength="17" placeholder="KMHL341ABPA123456" autocomplete="off" spellcheck="false" aria-label="차대번호 입력">
+      <button class="btn-cta" id="vin-btn">해석</button>
+    </div>
+    <p class="vin-help">차대번호는 자동차등록증, 또는 운전석 쪽 앞유리 하단·문기둥 라벨에서 확인할 수 있어요. 소유자 정보 없이 차량 자체 정보만 해석합니다.</p>
+    <div id="vin-result"></div>
+  </div>
+</div>
+
+<div id="result"></div>
+
+<footer>
+  본 정보는 취급설명서·부품몰 공개 데이터를 정리한 참고용입니다. 실제 정비 전 차량 취급설명서 또는 정비소에서 규격을 최종 확인하세요.<br>
+  이 서비스는 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받을 수 있습니다.
+</footer>
+</div>
+
+<script>
+const DATA = [{"id":112,"mfr":"현대","model":"G70","gen":"IK","cat":"세단","ys":2017,"ye":null,"engine":"세타2 2.0 T-GDI","fuel":"가솔린","cc":1998,"trim":"기본","oil":{"visc":"5W-30","api":"SN","ilsac":"GF-5","type":"합성유","cap":5.7,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26300-35505"}]},{"id":113,"mfr":"현대","model":"G70","gen":"IK","cat":"세단","ys":2017,"ye":null,"engine":"람다2 3.3 T-GDI","fuel":"가솔린","cc":3342,"trim":"기본","oil":{"visc":"5W-30","api":"SN","ilsac":"GF-5","type":"합성유","cap":6.8,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26320-3CKA0"}]},{"id":114,"mfr":"현대","model":"G70","gen":"IK FL","cat":"세단","ys":2021,"ye":null,"engine":"스마트스트림 G2.5 T-GDI","fuel":"가솔린","cc":2497,"trim":"기본","oil":{"visc":"0W-30","api":"SP","ilsac":"GF-6","type":"합성유","cap":5.8,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"Bosch","pn":"O 0367"},{"brand":"현대모비스(OE)","pn":"26350-2S000"}]},{"id":115,"mfr":"현대","model":"G80","gen":"RG3","cat":"세단","ys":2020,"ye":null,"engine":"스마트스트림 G2.5 T-GDI","fuel":"가솔린","cc":2497,"trim":"기본","oil":{"visc":"0W-30","api":"SP","ilsac":"GF-6","type":"합성유","cap":5.8,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"Bosch","pn":"O 0367"},{"brand":"현대모비스(OE)","pn":"26350-2S000"}]},{"id":116,"mfr":"현대","model":"G80","gen":"RG3","cat":"세단","ys":2020,"ye":null,"engine":"스마트스트림 G3.5 T-GDI","fuel":"가솔린","cc":3470,"trim":"기본","oil":{"visc":"0W-30","api":"SP","ilsac":"GF-6","type":"합성유","cap":6.7,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"Bosch","pn":"O 0367"},{"brand":"현대모비스(OE)","pn":"26350-2S000"}]},{"id":117,"mfr":"현대","model":"G90","gen":"RS4","cat":"세단","ys":2021,"ye":null,"engine":"스마트스트림 G3.5 T-GDI","fuel":"가솔린","cc":3470,"trim":"기본","oil":{"visc":"0W-30","api":"SP","ilsac":"GF-6","type":"합성유","cap":6.7,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"Bosch","pn":"O 0367"},{"brand":"현대모비스(OE)","pn":"26350-2S000"}]},{"id":118,"mfr":"현대","model":"GV70","gen":"JK","cat":"SUV","ys":2020,"ye":null,"engine":"스마트스트림 G2.5 T-GDI","fuel":"가솔린","cc":2497,"trim":"기본","oil":{"visc":"0W-30","api":"SP","ilsac":"GF-6","type":"합성유","cap":5.8,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"Bosch","pn":"O 0367"},{"brand":"현대모비스(OE)","pn":"26350-2S000"}]},{"id":119,"mfr":"현대","model":"GV70","gen":"JK","cat":"SUV","ys":2020,"ye":null,"engine":"스마트스트림 D2.2","fuel":"디젤","cc":2151,"trim":"기본","oil":{"visc":"0W-30","api":null,"ilsac":null,"type":"합성유 (ACEA C5/C2/C3)","cap":5.6,"interval":20000,"severe":10000,"verified":true},"filters":[{"brand":"현대모비스(OE)","pn":"26320-2R000"}]},{"id":120,"mfr":"현대","model":"GV80","gen":"JX","cat":"SUV","ys":2020,"ye":null,"engine":"스마트스트림 G2.5 T-GDI","fuel":"가솔린","cc":2497,"trim":"기본","oil":{"visc":"0W-30","api":"SP","ilsac":"GF-6","type":"합성유","cap":5.8,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"Bosch","pn":"O 0367"},{"brand":"현대모비스(OE)","pn":"26350-2S000"}]},{"id":121,"mfr":"현대","model":"GV80","gen":"JX","cat":"SUV","ys":2020,"ye":null,"engine":"스마트스트림 G3.5 T-GDI","fuel":"가솔린","cc":3470,"trim":"기본","oil":{"visc":"0W-30","api":"SP","ilsac":"GF-6","type":"합성유","cap":6.7,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"Bosch","pn":"O 0367"},{"brand":"현대모비스(OE)","pn":"26350-2S000"}]},{"id":122,"mfr":"현대","model":"GV80","gen":"JX","cat":"SUV","ys":2020,"ye":2023,"engine":"D3.0 디젤","fuel":"디젤","cc":2996,"trim":"기본","oil":{"visc":"0W-30","api":null,"ilsac":null,"type":"합성유 (ACEA C5/C2/C3)","cap":7.0,"interval":20000,"severe":10000,"verified":false},"filters":[]},{"id":35,"mfr":"현대","model":"그랜저","gen":"HG","cat":"세단","ys":2011,"ye":2016,"engine":"세타2 2.4 GDI","fuel":"가솔린","cc":2359,"trim":"기본","oil":{"visc":"5W-30","api":"SN","ilsac":"GF-5","type":"합성유","cap":5.1,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26300-35505"}]},{"id":36,"mfr":"현대","model":"그랜저","gen":"HG","cat":"세단","ys":2011,"ye":2016,"engine":"람다2 3.0 GDI","fuel":"가솔린","cc":2999,"trim":"기본","oil":{"visc":"5W-30","api":"SN","ilsac":"GF-5","type":"합성유","cap":6.0,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26320-3C30A"}]},{"id":37,"mfr":"현대","model":"그랜저","gen":"IG","cat":"세단","ys":2016,"ye":2022,"engine":"세타2 2.4 GDI","fuel":"가솔린","cc":2359,"trim":"기본","oil":{"visc":"5W-30","api":"SN","ilsac":"GF-5","type":"합성유","cap":5.1,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26300-35505"}]},{"id":38,"mfr":"현대","model":"그랜저","gen":"IG","cat":"세단","ys":2016,"ye":2022,"engine":"람다2 3.0 GDI","fuel":"가솔린","cc":2999,"trim":"기본","oil":{"visc":"5W-30","api":"SN","ilsac":"GF-5","type":"합성유","cap":6.0,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26320-3C30A"}]},{"id":39,"mfr":"현대","model":"그랜저","gen":"IG FL","cat":"세단","ys":2019,"ye":2022,"engine":"스마트스트림 G2.5 GDI","fuel":"가솔린","cc":2497,"trim":"기본","oil":{"visc":"0W-20","api":"SN PLUS 이상 (SP)","ilsac":"GF-6","type":"합성유","cap":5.8,"interval":15000,"severe":7500,"verified":true},"filters":[{"brand":"Bosch","pn":"O 0367"},{"brand":"현대모비스(OE)","pn":"26350-2S000"}]},{"id":40,"mfr":"현대","model":"그랜저","gen":"GN7","cat":"세단","ys":2022,"ye":null,"engine":"스마트스트림 G2.5 GDI","fuel":"가솔린","cc":2497,"trim":"기본","oil":{"visc":"0W-20","api":"SN PLUS 이상 (SP)","ilsac":"GF-6","type":"합성유(Full Synthetic)","cap":5.8,"interval":15000,"severe":7500,"verified":true},"filters":[{"brand":"Bosch","pn":"O 0367"},{"brand":"현대모비스(OE)","pn":"26350-2S000"}]},{"id":41,"mfr":"현대","model":"그랜저","gen":"GN7","cat":"세단","ys":2022,"ye":null,"engine":"스마트스트림 G3.5 LPI","fuel":"LPG","cc":3470,"trim":"기본","oil":{"visc":"0W-20","api":"SN PLUS 이상 (SP)","ilsac":null,"type":"합성유","cap":6.0,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"Bosch","pn":"O 0367"},{"brand":"현대모비스(OE)","pn":"26350-2S000"}]},{"id":42,"mfr":"현대","model":"그랜저","gen":"GN7","cat":"세단","ys":2022,"ye":null,"engine":"스마트스트림 G1.6 T-GDI HEV","fuel":"하이브리드","cc":1598,"trim":"기본","oil":{"visc":"0W-20","api":"SN PLUS 이상","ilsac":null,"type":"합성유","cap":5.0,"interval":15000,"severe":7500,"verified":true},"filters":[{"brand":"현대모비스(OE)","pn":"26350-2M000"}]},{"id":64,"mfr":"현대","model":"베뉴","gen":"QX","cat":"SUV","ys":2019,"ye":null,"engine":"스마일스트림 G1.6","fuel":"가솔린","cc":1598,"trim":"기본","oil":{"visc":"0W-20","api":"SN PLUS/SP","ilsac":"GF-6","type":"합성유(Full Synthetic)","cap":3.8,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26300-35505"}]},{"id":67,"mfr":"현대","model":"벨로스터","gen":"JS","cat":"소형차","ys":2018,"ye":2022,"engine":"감마 1.6 T-GDI","fuel":"가솔린","cc":1591,"trim":"기본","oil":{"visc":"5W-30","api":"SN","ilsac":"GF-5","type":"합성유","cap":4.0,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26350-2M000"}]},{"id":68,"mfr":"현대","model":"스타리아","gen":"US4","cat":"미니밴","ys":2021,"ye":null,"engine":"스마트스트림 D2.2","fuel":"디젤","cc":2199,"trim":"기본","oil":{"visc":"0W-30","api":null,"ilsac":null,"type":"합성유 (ACEA C5/C2/C3)","cap":5.6,"interval":20000,"severe":10000,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26320-2R000"}]},{"id":69,"mfr":"현대","model":"스타리아","gen":"US4","cat":"미니밴","ys":2021,"ye":null,"engine":"스마트스트림 G3.5 LPI","fuel":"LPG","cc":3470,"trim":"기본","oil":{"visc":"0W-20","api":"SP","ilsac":null,"type":"합성유","cap":6.0,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"Bosch","pn":"O 0367"},{"brand":"현대모비스(OE)","pn":"26350-2S000"}]},{"id":49,"mfr":"현대","model":"싼타페","gen":"DM","cat":"SUV","ys":2012,"ye":2018,"engine":"R 2.0 디젤","fuel":"디젤","cc":1995,"trim":"기본","oil":{"visc":"5W-30","api":null,"ilsac":null,"type":"합성유 (ACEA C3)","cap":6.4,"interval":20000,"severe":10000,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26320-2A500"}]},{"id":50,"mfr":"현대","model":"싼타페","gen":"DM","cat":"SUV","ys":2012,"ye":2018,"engine":"R 2.2 디젤","fuel":"디젤","cc":2199,"trim":"기본","oil":{"visc":"5W-30","api":null,"ilsac":null,"type":"합성유 (ACEA C3)","cap":6.6,"interval":20000,"severe":10000,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26320-2A500"}]},{"id":51,"mfr":"현대","model":"싼타페","gen":"TM","cat":"SUV","ys":2018,"ye":2023,"engine":"R 2.0 디젤","fuel":"디젤","cc":1995,"trim":"기본","oil":{"visc":"5W-30","api":null,"ilsac":null,"type":"합성유 (ACEA C3)","cap":6.4,"interval":20000,"severe":10000,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26320-2A500"}]},{"id":52,"mfr":"현대","model":"싼타페","gen":"TM","cat":"SUV","ys":2020,"ye":2023,"engine":"스마트스트림 G2.5 T-GDI","fuel":"가솔린","cc":2497,"trim":"기본","oil":{"visc":"0W-30","api":"SN PLUS/SP","ilsac":"GF-6","type":"합성유","cap":5.8,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"Bosch","pn":"O 0367"},{"brand":"현대모비스(OE)","pn":"26350-2S000"}]},{"id":53,"mfr":"현대","model":"싼타페","gen":"TM","cat":"SUV","ys":2021,"ye":2023,"engine":"스마트스트림 G1.6 T-GDI HEV","fuel":"하이브리드","cc":1598,"trim":"기본","oil":{"visc":"0W-20","api":"SN PLUS/SP","ilsac":"GF-6","type":"합성유(Full Synthetic)","cap":4.8,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26350-2M000"}]},{"id":54,"mfr":"현대","model":"싼타페","gen":"MX5","cat":"SUV","ys":2023,"ye":null,"engine":"스마트스트림 G2.5 T-GDI","fuel":"가솔린","cc":2497,"trim":"기본","oil":{"visc":"0W-30","api":"SN PLUS/SP","ilsac":"GF-6","type":"합성유","cap":5.8,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"Bosch","pn":"O 0367"},{"brand":"현대모비스(OE)","pn":"26350-2S000"}]},{"id":55,"mfr":"현대","model":"싼타페","gen":"MX5","cat":"SUV","ys":2023,"ye":null,"engine":"스마트스트림 G1.6 T-GDI HEV","fuel":"하이브리드","cc":1598,"trim":"기본","oil":{"visc":"0W-20","api":"SN PLUS/SP","ilsac":"GF-6","type":"합성유(Full Synthetic)","cap":4.8,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26350-2M000"}]},{"id":28,"mfr":"현대","model":"쏘나타","gen":"YF","cat":"세단","ys":2009,"ye":2014,"engine":"세타2 2.0 MPI","fuel":"가솔린","cc":1998,"trim":"기본","oil":{"visc":"5W-30","api":"SN","ilsac":"GF-5","type":"합성유","cap":4.1,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26300-35505"}]},{"id":29,"mfr":"현대","model":"쏘나타","gen":"LF","cat":"세단","ys":2014,"ye":2019,"engine":"누우 2.0 CVVL","fuel":"가솔린","cc":1999,"trim":"기본","oil":{"visc":"5W-30","api":"SN","ilsac":"GF-5","type":"합성유","cap":4.1,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26300-35505"}]},{"id":30,"mfr":"현대","model":"쏘나타","gen":"LF","cat":"세단","ys":2015,"ye":2019,"engine":"감마 1.6 T-GDI","fuel":"가솔린","cc":1591,"trim":"에코","oil":{"visc":"5W-30","api":"SN","ilsac":"GF-5","type":"합성유","cap":4.0,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26350-2M000"}]},{"id":31,"mfr":"현대","model":"쏘나타","gen":"DN8","cat":"세단","ys":2019,"ye":null,"engine":"스마트스트림 G2.0","fuel":"가솔린","cc":1999,"trim":"기본","oil":{"visc":"0W-20","api":"SN PLUS/SP","ilsac":"GF-6","type":"합성유(Full Synthetic)","cap":4.0,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26300-35505"}]},{"id":32,"mfr":"현대","model":"쏘나타","gen":"DN8","cat":"세단","ys":2019,"ye":null,"engine":"스마트스트림 G1.6 T-GDI","fuel":"가솔린","cc":1598,"trim":"센슈어스","oil":{"visc":"0W-20","api":"SN PLUS/SP","ilsac":"GF-6","type":"합성유(Full Synthetic)","cap":4.5,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26350-2M000"}]},{"id":33,"mfr":"현대","model":"쏘나타","gen":"DN8","cat":"세단","ys":2019,"ye":null,"engine":"스마트스트림 G2.5 T-GDI","fuel":"가솔린","cc":2497,"trim":"N라인","oil":{"visc":"0W-30","api":"SN PLUS/SP","ilsac":"GF-6","type":"합성유","cap":5.8,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"Bosch","pn":"O 0367"},{"brand":"현대모비스(OE)","pn":"26350-2S000"}]},{"id":34,"mfr":"현대","model":"쏘나타","gen":"DN8","cat":"세단","ys":2019,"ye":null,"engine":"스마트스트림 G2.0 HEV","fuel":"하이브리드","cc":1999,"trim":"기본","oil":{"visc":"0W-20","api":"SN PLUS/SP","ilsac":"GF-6","type":"합성유(Full Synthetic)","cap":4.2,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26300-35505"}]},{"id":21,"mfr":"현대","model":"아반떼","gen":"MD","cat":"세단","ys":2010,"ye":2015,"engine":"감마 1.6 GDI","fuel":"가솔린","cc":1591,"trim":"기본","oil":{"visc":"5W-20","api":"SM 이상","ilsac":"GF-4","type":"합성유 권장","cap":3.6,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26300-35505"}]},{"id":22,"mfr":"현대","model":"아반떼","gen":"AD","cat":"세단","ys":2015,"ye":2018,"engine":"감마 1.6 GDI","fuel":"가솔린","cc":1591,"trim":"기본","oil":{"visc":"5W-30","api":"SM 이상","ilsac":"GF-4 이상","type":"합성유 권장","cap":3.6,"interval":15000,"severe":7500,"verified":true},"filters":[{"brand":"현대모비스(OE)","pn":"26300-35505"}]},{"id":23,"mfr":"현대","model":"아반떼","gen":"AD","cat":"세단","ys":2018,"ye":2020,"engine":"스마트스트림 G1.6","fuel":"가솔린","cc":1598,"trim":"더 뉴 아반떼","oil":{"visc":"0W-20","api":"SN PLUS/SP","ilsac":"GF-6","type":"합성유(Full Synthetic)","cap":4.0,"interval":15000,"severe":7500,"verified":true},"filters":[{"brand":"현대모비스(OE)","pn":"26300-35505"}]},{"id":24,"mfr":"현대","model":"아반떼","gen":"CN7","cat":"세단","ys":2020,"ye":null,"engine":"스마트스트림 G1.6","fuel":"가솔린","cc":1598,"trim":"기본","oil":{"visc":"0W-20","api":"SN PLUS 이상 (SP)","ilsac":"GF-6","type":"합성유(Full Synthetic)","cap":3.8,"interval":15000,"severe":7500,"verified":true},"filters":[{"brand":"현대모비스(OE)","pn":"26300-35505"}]},{"id":26,"mfr":"현대","model":"아반떼","gen":"CN7","cat":"세단","ys":2020,"ye":null,"engine":"스마트스트림 LPI","fuel":"LPG","cc":1598,"trim":"기본","oil":{"visc":"5W-20","api":"SN PLUS 이상","ilsac":null,"type":"합성유","cap":3.6,"interval":15000,"severe":7500,"verified":true},"filters":[{"brand":"현대모비스(OE)","pn":"26300-35505"}]},{"id":25,"mfr":"현대","model":"아반떼","gen":"CN7","cat":"세단","ys":2021,"ye":null,"engine":"스마트스트림 G1.6 T-GDI","fuel":"가솔린","cc":1598,"trim":"N라인","oil":{"visc":"0W-20","api":"SN PLUS/SP","ilsac":"GF-6","type":"합성유(Full Synthetic)","cap":3.8,"interval":15000,"severe":7500,"verified":true},"filters":[{"brand":"현대모비스(OE)","pn":"26300-35505"}]},{"id":27,"mfr":"현대","model":"아반떼","gen":"CN7","cat":"세단","ys":2021,"ye":null,"engine":"스마트스트림 하이브리드","fuel":"하이브리드","cc":1580,"trim":"기본","oil":{"visc":"0W-20","api":"SN PLUS 이상","ilsac":null,"type":"저점도 합성유(C2)","cap":3.6,"interval":15000,"severe":7500,"verified":true},"filters":[{"brand":"현대모비스(OE)","pn":"26350-2M000"}]},{"id":65,"mfr":"현대","model":"캐스퍼","gen":"AX1","cat":"소형차","ys":2021,"ye":null,"engine":"카파 1.0 MPI","fuel":"가솔린","cc":998,"trim":"기본","oil":{"visc":"0W-20","api":"SN PLUS 이상","ilsac":"GF-6","type":"합성유","cap":3.5,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26300-02503"}]},{"id":66,"mfr":"현대","model":"캐스퍼","gen":"AX1","cat":"소형차","ys":2021,"ye":null,"engine":"카파 1.0 T-GDI","fuel":"가솔린","cc":998,"trim":"터보","oil":{"visc":"0W-20","api":"SN PLUS 이상","ilsac":"GF-6","type":"합성유","cap":3.6,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26300-02503"}]},{"id":59,"mfr":"현대","model":"코나","gen":"OS","cat":"SUV","ys":2017,"ye":2023,"engine":"감마 1.6 T-GDI","fuel":"가솔린","cc":1591,"trim":"기본","oil":{"visc":"5W-30","api":"SN","ilsac":"GF-5","type":"합성유","cap":4.0,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26350-2M000"}]},{"id":60,"mfr":"현대","model":"코나","gen":"OS","cat":"SUV","ys":2017,"ye":2023,"engine":"누우 2.0 MPI","fuel":"가솔린","cc":1999,"trim":"기본","oil":{"visc":"5W-30","api":"SN","ilsac":"GF-5","type":"합성유","cap":4.1,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26300-35505"}]},{"id":61,"mfr":"현대","model":"코나","gen":"OS","cat":"SUV","ys":2017,"ye":2023,"engine":"감마 1.6 GDI HEV","fuel":"하이브리드","cc":1580,"trim":"기본","oil":{"visc":"0W-20","api":"SN 이상","ilsac":null,"type":"저점도 합성유","cap":3.8,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26350-2M000"}]},{"id":62,"mfr":"현대","model":"코나","gen":"SX2","cat":"SUV","ys":2023,"ye":null,"engine":"스마트스트림 G1.6 T-GDI","fuel":"가솔린","cc":1598,"trim":"기본","oil":{"visc":"0W-20","api":"SN PLUS/SP","ilsac":"GF-6","type":"합성유(Full Synthetic)","cap":4.5,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26350-2M000"}]},{"id":63,"mfr":"현대","model":"코나","gen":"SX2","cat":"SUV","ys":2023,"ye":null,"engine":"스마트스트림 G1.6 HEV","fuel":"하이브리드","cc":1580,"trim":"기본","oil":{"visc":"0W-20","api":"SN PLUS/SP","ilsac":"GF-6","type":"합성유(Full Synthetic)","cap":3.8,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26350-2M000"}]},{"id":43,"mfr":"현대","model":"투싼","gen":"ix(LM)","cat":"SUV","ys":2010,"ye":2015,"engine":"R 2.0 디젤","fuel":"디젤","cc":1995,"trim":"기본","oil":{"visc":"5W-30","api":null,"ilsac":null,"type":"합성유 (ACEA C3)","cap":6.4,"interval":20000,"severe":10000,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26320-2A500"}]},{"id":44,"mfr":"현대","model":"투싼","gen":"TL","cat":"SUV","ys":2015,"ye":2020,"engine":"감마 1.6 T-GDI","fuel":"가솔린","cc":1591,"trim":"기본","oil":{"visc":"5W-30","api":"SN","ilsac":"GF-5","type":"합성유","cap":4.0,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26350-2M000"}]},{"id":45,"mfr":"현대","model":"투싼","gen":"TL","cat":"SUV","ys":2015,"ye":2020,"engine":"R 2.0 디젤","fuel":"디젤","cc":1995,"trim":"기본","oil":{"visc":"5W-30","api":null,"ilsac":null,"type":"합성유 (ACEA C3)","cap":6.4,"interval":20000,"severe":10000,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26320-2A500"}]},{"id":46,"mfr":"현대","model":"투싼","gen":"NX4","cat":"SUV","ys":2020,"ye":null,"engine":"스마트스트림 D2.0","fuel":"디젤","cc":1998,"trim":"기본","oil":{"visc":"0W-30","api":null,"ilsac":null,"type":"합성유 (ACEA C5/C2/C3)","cap":6.0,"interval":20000,"severe":10000,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26320-2R000"}]},{"id":47,"mfr":"현대","model":"투싼","gen":"NX4","cat":"SUV","ys":2020,"ye":null,"engine":"스마트스트림 G1.6 T-GDI","fuel":"가솔린","cc":1598,"trim":"기본","oil":{"visc":"0W-20","api":"SN PLUS/SP","ilsac":"GF-6","type":"합성유(Full Synthetic)","cap":4.5,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26350-2M000"}]},{"id":48,"mfr":"현대","model":"투싼","gen":"NX4","cat":"SUV","ys":2021,"ye":null,"engine":"스마트스트림 G1.6 T-GDI HEV","fuel":"하이브리드","cc":1598,"trim":"기본","oil":{"visc":"0W-20","api":"SN PLUS/SP","ilsac":"GF-6","type":"합성유(Full Synthetic)","cap":4.8,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26350-2M000"}]},{"id":56,"mfr":"현대","model":"팰리세이드","gen":"LX2","cat":"SUV","ys":2018,"ye":2025,"engine":"람다2 3.8 GDI","fuel":"가솔린","cc":3778,"trim":"기본","oil":{"visc":"5W-30","api":"SN","ilsac":"GF-5","type":"합성유","cap":6.9,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26320-3C30A"}]},{"id":57,"mfr":"현대","model":"팰리세이드","gen":"LX2","cat":"SUV","ys":2018,"ye":2025,"engine":"R 2.2 디젤","fuel":"디젤","cc":2199,"trim":"기본","oil":{"visc":"0W-30","api":null,"ilsac":null,"type":"합성유 (ACEA C5/C2/C3)","cap":5.6,"interval":20000,"severe":10000,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26320-2R000"}]},{"id":58,"mfr":"현대","model":"팰리세이드","gen":"LX3","cat":"SUV","ys":2025,"ye":null,"engine":"스마트스트림 G2.5 T-GDI","fuel":"가솔린","cc":2497,"trim":"기본","oil":{"visc":"0W-30","api":"SP","ilsac":"GF-6","type":"합성유","cap":5.8,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"Bosch","pn":"O 0367"},{"brand":"현대모비스(OE)","pn":"26350-2S000"}]},{"id":73,"mfr":"기아","model":"K3","gen":"YD","cat":"세단","ys":2012,"ye":2018,"engine":"감마 1.6 GDI","fuel":"가솔린","cc":1591,"trim":"기본","oil":{"visc":"5W-20","api":"SM 이상","ilsac":"GF-4","type":"합성유 권장","cap":3.6,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26300-35505"}]},{"id":74,"mfr":"기아","model":"K3","gen":"BD","cat":"세단","ys":2018,"ye":2024,"engine":"스마트스트림 G1.6","fuel":"가솔린","cc":1598,"trim":"기본","oil":{"visc":"0W-20","api":"SN PLUS/SP","ilsac":"GF-6","type":"합성유(Full Synthetic)","cap":4.0,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26300-35505"}]},{"id":75,"mfr":"기아","model":"K5","gen":"TF","cat":"세단","ys":2010,"ye":2015,"engine":"세타2 2.0 MPI","fuel":"가솔린","cc":1998,"trim":"기본","oil":{"visc":"5W-30","api":"SN","ilsac":"GF-5","type":"합성유","cap":4.1,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26300-35505"}]},{"id":76,"mfr":"기아","model":"K5","gen":"JF","cat":"세단","ys":2015,"ye":2019,"engine":"누우 2.0 CVVL","fuel":"가솔린","cc":1999,"trim":"기본","oil":{"visc":"5W-30","api":"SN","ilsac":"GF-5","type":"합성유","cap":4.1,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26300-35505"}]},{"id":77,"mfr":"기아","model":"K5","gen":"JF","cat":"세단","ys":2015,"ye":2019,"engine":"감마 1.6 T-GDI","fuel":"가솔린","cc":1591,"trim":"기본","oil":{"visc":"5W-30","api":"SN","ilsac":"GF-5","type":"합성유","cap":4.0,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26350-2M000"}]},{"id":78,"mfr":"기아","model":"K5","gen":"DL3","cat":"세단","ys":2019,"ye":null,"engine":"스마트스트림 G1.6 T-GDI","fuel":"가솔린","cc":1598,"trim":"기본","oil":{"visc":"0W-20","api":"SN PLUS/SP","ilsac":"GF-6","type":"합성유(Full Synthetic)","cap":4.0,"interval":15000,"severe":7500,"verified":true},"filters":[{"brand":"현대모비스(OE)","pn":"26350-2M000"}]},{"id":79,"mfr":"기아","model":"K5","gen":"DL3","cat":"세단","ys":2019,"ye":null,"engine":"스마트스트림 G2.0","fuel":"가솔린","cc":1999,"trim":"기본","oil":{"visc":"0W-20","api":"SN PLUS/SP","ilsac":"GF-6","type":"합성유(Full Synthetic)","cap":4.0,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26300-35505"}]},{"id":80,"mfr":"기아","model":"K5","gen":"DL3","cat":"세단","ys":2019,"ye":null,"engine":"스마트스트림 G2.0 HEV","fuel":"하이브리드","cc":1999,"trim":"기본","oil":{"visc":"0W-20","api":"SN PLUS/SP","ilsac":"GF-6","type":"합성유(Full Synthetic)","cap":4.2,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26300-35505"}]},{"id":81,"mfr":"기아","model":"K7","gen":"VG","cat":"세단","ys":2012,"ye":2016,"engine":"세타2 2.4 GDI","fuel":"가솔린","cc":2359,"trim":"기본","oil":{"visc":"5W-30","api":"SN","ilsac":"GF-5","type":"합성유","cap":5.1,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26300-35505"}]},{"id":82,"mfr":"기아","model":"K7","gen":"YG","cat":"세단","ys":2016,"ye":2021,"engine":"세타2 2.4 GDI","fuel":"가솔린","cc":2359,"trim":"기본","oil":{"visc":"5W-30","api":"SN","ilsac":"GF-5","type":"합성유","cap":5.1,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26300-35505"}]},{"id":83,"mfr":"기아","model":"K7","gen":"YG","cat":"세단","ys":2016,"ye":2021,"engine":"람다2 3.0 GDI","fuel":"가솔린","cc":2999,"trim":"기본","oil":{"visc":"5W-30","api":"SN","ilsac":"GF-5","type":"합성유","cap":6.0,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26320-3C30A"}]},{"id":84,"mfr":"기아","model":"K8","gen":"GL3","cat":"세단","ys":2021,"ye":null,"engine":"스마트스트림 G2.5 GDI","fuel":"가솔린","cc":2497,"trim":"기본","oil":{"visc":"0W-20","api":"SP","ilsac":"GF-6","type":"합성유","cap":5.8,"interval":15000,"severe":7500,"verified":true},"filters":[{"brand":"Bosch","pn":"O 0367"},{"brand":"현대모비스(OE)","pn":"26350-2S000"}]},{"id":85,"mfr":"기아","model":"K8","gen":"GL3","cat":"세단","ys":2021,"ye":null,"engine":"스마트스트림 G3.5 GDI","fuel":"가솔린","cc":3470,"trim":"기본","oil":{"visc":"0W-20","api":"SP","ilsac":"GF-6","type":"합성유","cap":6.5,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"Bosch","pn":"O 0367"},{"brand":"현대모비스(OE)","pn":"26350-2S000"}]},{"id":86,"mfr":"기아","model":"K8","gen":"GL3","cat":"세단","ys":2021,"ye":null,"engine":"스마트스트림 G1.6 T-GDI HEV","fuel":"하이브리드","cc":1598,"trim":"기본","oil":{"visc":"0W-20","api":"SN PLUS/SP","ilsac":"GF-6","type":"합성유(Full Synthetic)","cap":5.0,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26350-2M000"}]},{"id":87,"mfr":"기아","model":"K9","gen":"RJ","cat":"세단","ys":2018,"ye":null,"engine":"람다2 3.8 GDI","fuel":"가솔린","cc":3778,"trim":"기본","oil":{"visc":"5W-30","api":"SN","ilsac":"GF-5","type":"합성유","cap":6.9,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26320-3C30A"}]},{"id":102,"mfr":"기아","model":"니로","gen":"DE","cat":"SUV","ys":2016,"ye":2022,"engine":"카파 1.6 GDI HEV","fuel":"하이브리드","cc":1580,"trim":"기본","oil":{"visc":"0W-20","api":"SN 이상","ilsac":"GF-5","type":"저점도 합성유","cap":3.8,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26300-35505"}]},{"id":103,"mfr":"기아","model":"니로","gen":"SG2","cat":"SUV","ys":2022,"ye":null,"engine":"스마트스트림 G1.6 HEV","fuel":"하이브리드","cc":1580,"trim":"기본","oil":{"visc":"0W-20","api":"SN PLUS/SP","ilsac":"GF-6","type":"합성유(Full Synthetic)","cap":3.8,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26350-2M000"}]},{"id":72,"mfr":"기아","model":"레이","gen":"TAM","cat":"소형차","ys":2011,"ye":null,"engine":"카파 1.0 MPI","fuel":"가솔린","cc":998,"trim":"기본","oil":{"visc":"0W-20","api":"SN 이상","ilsac":null,"type":"합성유","cap":3.5,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26300-02503"}]},{"id":70,"mfr":"기아","model":"모닝","gen":"TA","cat":"소형차","ys":2011,"ye":2017,"engine":"카파 1.0 MPI","fuel":"가솔린","cc":998,"trim":"기본","oil":{"visc":"5W-30","api":"SM 이상","ilsac":"GF-4","type":"합성유 권장","cap":3.4,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26300-02503"}]},{"id":71,"mfr":"기아","model":"모닝","gen":"JA","cat":"소형차","ys":2017,"ye":null,"engine":"카파 1.0 MPI","fuel":"가솔린","cc":998,"trim":"기본","oil":{"visc":"0W-20","api":"SN 이상","ilsac":"GF-5 이상","type":"합성유","cap":3.5,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26300-02503"}]},{"id":111,"mfr":"기아","model":"모하비","gen":"HM2","cat":"SUV","ys":2019,"ye":null,"engine":"S2 3.0 디젤","fuel":"디젤","cc":2959,"trim":"기본","oil":{"visc":"5W-30","api":null,"ilsac":null,"type":"합성유 (ACEA C3)","cap":7.0,"interval":20000,"severe":10000,"verified":false},"filters":[]},{"id":100,"mfr":"기아","model":"셀토스","gen":"SP2","cat":"SUV","ys":2019,"ye":null,"engine":"스마트스트림 G1.6 T-GDI","fuel":"가솔린","cc":1598,"trim":"기본","oil":{"visc":"0W-20","api":"SN PLUS/SP","ilsac":"GF-6","type":"합성유(Full Synthetic)","cap":4.5,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26350-2M000"}]},{"id":101,"mfr":"기아","model":"셀토스","gen":"SP2","cat":"SUV","ys":2019,"ye":null,"engine":"스마트스트림 G2.0","fuel":"가솔린","cc":1999,"trim":"기본","oil":{"visc":"0W-20","api":"SN PLUS/SP","ilsac":"GF-6","type":"합성유(Full Synthetic)","cap":4.0,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26300-35505"}]},{"id":109,"mfr":"기아","model":"스팅어","gen":"CK","cat":"세단","ys":2017,"ye":2023,"engine":"세타2 2.0 T-GDI","fuel":"가솔린","cc":1998,"trim":"기본","oil":{"visc":"5W-30","api":"SN","ilsac":"GF-5","type":"합성유","cap":5.7,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26300-35505"}]},{"id":110,"mfr":"기아","model":"스팅어","gen":"CK","cat":"세단","ys":2017,"ye":2023,"engine":"람다2 3.3 T-GDI","fuel":"가솔린","cc":3342,"trim":"기본","oil":{"visc":"5W-30","api":"SN","ilsac":"GF-5","type":"합성유","cap":6.8,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26320-3CKA0"}]},{"id":88,"mfr":"기아","model":"스포티지","gen":"SL","cat":"SUV","ys":2010,"ye":2015,"engine":"R 2.0 디젤","fuel":"디젤","cc":1995,"trim":"기본","oil":{"visc":"5W-30","api":null,"ilsac":null,"type":"합성유 (ACEA C3)","cap":6.4,"interval":20000,"severe":10000,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26320-2A500"}]},{"id":89,"mfr":"기아","model":"스포티지","gen":"QL","cat":"SUV","ys":2015,"ye":2021,"engine":"R 2.0 디젤","fuel":"디젤","cc":1995,"trim":"기본","oil":{"visc":"5W-30","api":null,"ilsac":null,"type":"합성유 (ACEA C3)","cap":6.4,"interval":20000,"severe":10000,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26320-2A500"}]},{"id":90,"mfr":"기아","model":"스포티지","gen":"QL","cat":"SUV","ys":2015,"ye":2021,"engine":"감마 1.6 T-GDI","fuel":"가솔린","cc":1591,"trim":"기본","oil":{"visc":"5W-30","api":"SN","ilsac":"GF-5","type":"합성유","cap":4.0,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26350-2M000"}]},{"id":91,"mfr":"기아","model":"스포티지","gen":"NQ5","cat":"SUV","ys":2021,"ye":null,"engine":"스마트스트림 G1.6 T-GDI","fuel":"가솔린","cc":1598,"trim":"기본","oil":{"visc":"0W-20","api":"SN PLUS/SP","ilsac":"GF-6","type":"합성유(Full Synthetic)","cap":4.5,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26350-2M000"}]},{"id":92,"mfr":"기아","model":"스포티지","gen":"NQ5","cat":"SUV","ys":2021,"ye":null,"engine":"스마트스트림 D2.0","fuel":"디젤","cc":1998,"trim":"기본","oil":{"visc":"0W-30","api":null,"ilsac":null,"type":"합성유 (ACEA C5/C2/C3)","cap":6.0,"interval":20000,"severe":10000,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26320-2R000"}]},{"id":93,"mfr":"기아","model":"스포티지","gen":"NQ5","cat":"SUV","ys":2021,"ye":null,"engine":"스마트스트림 G1.6 T-GDI HEV","fuel":"하이브리드","cc":1598,"trim":"기본","oil":{"visc":"0W-20","api":"SN PLUS 이상","ilsac":"GF-6","type":"합성유(Full Synthetic)","cap":4.8,"interval":15000,"severe":7500,"verified":true},"filters":[{"brand":"현대모비스(OE)","pn":"26350-2M000"}]},{"id":94,"mfr":"기아","model":"쏘렌토","gen":"XM","cat":"SUV","ys":2009,"ye":2014,"engine":"R 2.2 디젤","fuel":"디젤","cc":2199,"trim":"기본","oil":{"visc":"5W-30","api":null,"ilsac":null,"type":"합성유 (ACEA C3)","cap":6.6,"interval":20000,"severe":10000,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26320-2A500"}]},{"id":95,"mfr":"기아","model":"쏘렌토","gen":"UM","cat":"SUV","ys":2014,"ye":2020,"engine":"R 2.0 디젤","fuel":"디젤","cc":1995,"trim":"기본","oil":{"visc":"5W-30","api":null,"ilsac":null,"type":"합성유 (ACEA C3)","cap":6.4,"interval":20000,"severe":10000,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26320-2A500"}]},{"id":96,"mfr":"기아","model":"쏘렌토","gen":"UM","cat":"SUV","ys":2014,"ye":2020,"engine":"R 2.2 디젤","fuel":"디젤","cc":2199,"trim":"기본","oil":{"visc":"5W-30","api":null,"ilsac":null,"type":"합성유 (ACEA C3)","cap":6.6,"interval":20000,"severe":10000,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26320-2A500"}]},{"id":97,"mfr":"기아","model":"쏘렌토","gen":"MQ4","cat":"SUV","ys":2020,"ye":null,"engine":"스마트스트림 G2.5 T-GDI","fuel":"가솔린","cc":2497,"trim":"기본","oil":{"visc":"0W-30","api":"SN PLUS/SP","ilsac":"GF-6","type":"합성유","cap":5.8,"interval":15000,"severe":7500,"verified":true},"filters":[{"brand":"Bosch","pn":"O 0367"},{"brand":"현대모비스(OE)","pn":"26350-2S000"}]},{"id":98,"mfr":"기아","model":"쏘렌토","gen":"MQ4","cat":"SUV","ys":2020,"ye":null,"engine":"스마트스트림 D2.2","fuel":"디젤","cc":2151,"trim":"기본","oil":{"visc":"0W-30","api":null,"ilsac":null,"type":"합성유 (ACEA C5/C2/C3)","cap":5.6,"interval":20000,"severe":10000,"verified":true},"filters":[{"brand":"현대모비스(OE)","pn":"26320-2R000"}]},{"id":99,"mfr":"기아","model":"쏘렌토","gen":"MQ4","cat":"SUV","ys":2021,"ye":null,"engine":"스마트스트림 G1.6 T-GDI HEV","fuel":"하이브리드","cc":1598,"trim":"기본","oil":{"visc":"0W-20","api":"SN PLUS/SP","ilsac":"GF-6","type":"합성유","cap":4.8,"interval":15000,"severe":7500,"verified":true},"filters":[{"brand":"현대모비스(OE)","pn":"26350-2M000"}]},{"id":104,"mfr":"기아","model":"카니발","gen":"YP","cat":"미니밴","ys":2014,"ye":2020,"engine":"R 2.2 디젤","fuel":"디젤","cc":2199,"trim":"기본","oil":{"visc":"5W-30","api":null,"ilsac":null,"type":"합성유 (ACEA C3)","cap":6.6,"interval":20000,"severe":10000,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26320-2A500"}]},{"id":105,"mfr":"기아","model":"카니발","gen":"YP","cat":"미니밴","ys":2014,"ye":2020,"engine":"람다2 3.3 GDI","fuel":"가솔린","cc":3342,"trim":"기본","oil":{"visc":"5W-30","api":"SN","ilsac":"GF-5","type":"합성유","cap":6.5,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26320-3C30A"}]},{"id":106,"mfr":"기아","model":"카니발","gen":"KA4","cat":"미니밴","ys":2020,"ye":null,"engine":"스마트스트림 D2.2","fuel":"디젤","cc":2151,"trim":"기본","oil":{"visc":"0W-30","api":null,"ilsac":null,"type":"합성유 (ACEA C5/C2/C3)","cap":6.5,"interval":20000,"severe":10000,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26320-2R000"}]},{"id":107,"mfr":"기아","model":"카니발","gen":"KA4","cat":"미니밴","ys":2020,"ye":null,"engine":"스마트스트림 G3.5 GDI","fuel":"가솔린","cc":3470,"trim":"기본","oil":{"visc":"0W-20","api":"SP","ilsac":"GF-6","type":"합성유","cap":6.5,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"Bosch","pn":"O 0367"},{"brand":"현대모비스(OE)","pn":"26350-2S000"}]},{"id":108,"mfr":"기아","model":"카니발","gen":"KA4","cat":"미니밴","ys":2023,"ye":null,"engine":"스마트스트림 G1.6 T-GDI HEV","fuel":"하이브리드","cc":1598,"trim":"기본","oil":{"visc":"0W-20","api":"SN PLUS/SP","ilsac":"GF-6","type":"합성유(Full Synthetic)","cap":5.0,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"현대모비스(OE)","pn":"26350-2M000"}]},{"id":123,"mfr":"벤츠","model":"C클래스","gen":"W205","cat":"세단","ys":2014,"ye":2021,"engine":"M274 2.0 터보 (C200)","fuel":"가솔린","cc":1991,"trim":"기본","oil":{"visc":"0W-30","api":null,"ilsac":null,"type":"합성유 · MB 229.5 인증","cap":6.0,"interval":20000,"severe":10000,"verified":false},"filters":[{"brand":"벤츠(OE)","pn":"A2701800109"}]},{"id":124,"mfr":"벤츠","model":"C클래스","gen":"W205","cat":"세단","ys":2014,"ye":2021,"engine":"OM651 2.2 디젤 (C220d)","fuel":"디젤","cc":2143,"trim":"기본","oil":{"visc":"5W-30","api":null,"ilsac":null,"type":"합성유 · MB 229.52 인증","cap":6.5,"interval":20000,"severe":10000,"verified":false},"filters":[{"brand":"MANN-FILTER","pn":"HU 7010 z"}]},{"id":125,"mfr":"벤츠","model":"C클래스","gen":"W206","cat":"세단","ys":2021,"ye":null,"engine":"M254 1.5 터보 MHEV (C200)","fuel":"가솔린","cc":1496,"trim":"기본","oil":{"visc":"0W-20","api":null,"ilsac":null,"type":"합성유 · MB 229.71 인증","cap":5.5,"interval":20000,"severe":10000,"verified":false},"filters":[]},{"id":126,"mfr":"벤츠","model":"E클래스","gen":"W212","cat":"세단","ys":2009,"ye":2016,"engine":"M274 2.0 터보 (E200)","fuel":"가솔린","cc":1991,"trim":"기본","oil":{"visc":"0W-30","api":null,"ilsac":null,"type":"합성유 · MB 229.5 인증","cap":6.0,"interval":20000,"severe":10000,"verified":false},"filters":[{"brand":"벤츠(OE)","pn":"A2701800109"}]},{"id":127,"mfr":"벤츠","model":"E클래스","gen":"W212","cat":"세단","ys":2009,"ye":2016,"engine":"OM651 2.2 디젤 (E220 CDI)","fuel":"디젤","cc":2143,"trim":"기본","oil":{"visc":"5W-30","api":null,"ilsac":null,"type":"합성유 · MB 229.52 인증","cap":6.5,"interval":20000,"severe":10000,"verified":false},"filters":[{"brand":"MANN-FILTER","pn":"HU 7010 z"}]},{"id":128,"mfr":"벤츠","model":"E클래스","gen":"W213","cat":"세단","ys":2016,"ye":2023,"engine":"M274/M264 2.0 터보 (E200/E300)","fuel":"가솔린","cc":1991,"trim":"기본","oil":{"visc":"0W-30","api":null,"ilsac":null,"type":"합성유 · MB 229.5 인증","cap":6.0,"interval":20000,"severe":10000,"verified":false},"filters":[{"brand":"벤츠(OE)","pn":"A2701800109"}]},{"id":129,"mfr":"벤츠","model":"E클래스","gen":"W213","cat":"세단","ys":2016,"ye":2023,"engine":"OM654 2.0 디젤 (E220d)","fuel":"디젤","cc":1950,"trim":"기본","oil":{"visc":"5W-30","api":null,"ilsac":null,"type":"합성유 · MB 229.52 인증","cap":6.6,"interval":20000,"severe":10000,"verified":false},"filters":[]},{"id":130,"mfr":"벤츠","model":"E클래스","gen":"W214","cat":"세단","ys":2023,"ye":null,"engine":"M254 2.0 터보 MHEV (E300)","fuel":"가솔린","cc":1999,"trim":"기본","oil":{"visc":"0W-20","api":null,"ilsac":null,"type":"합성유 · MB 229.71 인증","cap":6.0,"interval":20000,"severe":10000,"verified":false},"filters":[]},{"id":134,"mfr":"벤츠","model":"GLC","gen":"X253","cat":"SUV","ys":2015,"ye":2022,"engine":"M264 2.0 터보 (GLC300)","fuel":"가솔린","cc":1991,"trim":"기본","oil":{"visc":"0W-30","api":null,"ilsac":null,"type":"합성유 · MB 229.5 인증","cap":6.0,"interval":20000,"severe":10000,"verified":false},"filters":[{"brand":"벤츠(OE)","pn":"A2701800109"}]},{"id":135,"mfr":"벤츠","model":"GLC","gen":"X253","cat":"SUV","ys":2015,"ye":2022,"engine":"OM654 2.0 디젤 (GLC220d)","fuel":"디젤","cc":1950,"trim":"기본","oil":{"visc":"5W-30","api":null,"ilsac":null,"type":"합성유 · MB 229.52 인증","cap":6.6,"interval":20000,"severe":10000,"verified":false},"filters":[]},{"id":136,"mfr":"벤츠","model":"GLE","gen":"W167","cat":"SUV","ys":2019,"ye":null,"engine":"OM656 3.0 디젤 (GLE400d)","fuel":"디젤","cc":2925,"trim":"기본","oil":{"visc":"5W-30","api":null,"ilsac":null,"type":"합성유 · MB 229.52 인증","cap":8.0,"interval":20000,"severe":10000,"verified":false},"filters":[]},{"id":131,"mfr":"벤츠","model":"S클래스","gen":"W222","cat":"세단","ys":2013,"ye":2020,"engine":"M276 3.0/3.5 (S350/S400)","fuel":"가솔린","cc":2996,"trim":"기본","oil":{"visc":"0W-30","api":null,"ilsac":null,"type":"합성유 · MB 229.5 인증","cap":7.5,"interval":20000,"severe":10000,"verified":false},"filters":[]},{"id":132,"mfr":"벤츠","model":"S클래스","gen":"W223","cat":"세단","ys":2020,"ye":null,"engine":"M256 3.0 터보 MHEV (S450/S500)","fuel":"가솔린","cc":2999,"trim":"기본","oil":{"visc":"0W-20","api":null,"ilsac":null,"type":"합성유 · MB 229.71 인증","cap":7.0,"interval":20000,"severe":10000,"verified":false},"filters":[]},{"id":133,"mfr":"벤츠","model":"S클래스","gen":"W223","cat":"세단","ys":2020,"ye":null,"engine":"OM656 3.0 디젤 (S400d)","fuel":"디젤","cc":2925,"trim":"기본","oil":{"visc":"5W-30","api":null,"ilsac":null,"type":"합성유 · MB 229.52 인증","cap":8.0,"interval":20000,"severe":10000,"verified":false},"filters":[]},{"id":137,"mfr":"BMW","model":"3시리즈","gen":"F30","cat":"세단","ys":2012,"ye":2019,"engine":"N20 2.0 터보 (320i/328i)","fuel":"가솔린","cc":1997,"trim":"기본","oil":{"visc":"0W-30","api":null,"ilsac":null,"type":"합성유 · BMW LL-01 인증","cap":5.0,"interval":20000,"severe":10000,"verified":false},"filters":[{"brand":"MANN-FILTER","pn":"HU 6014 z"}]},{"id":138,"mfr":"BMW","model":"3시리즈","gen":"F30","cat":"세단","ys":2012,"ye":2019,"engine":"N47/B47 2.0 디젤 (320d)","fuel":"디젤","cc":1995,"trim":"기본","oil":{"visc":"5W-30","api":null,"ilsac":null,"type":"합성유 · BMW LL-04 인증","cap":5.2,"interval":20000,"severe":10000,"verified":false},"filters":[{"brand":"MANN-FILTER","pn":"HU 6004 x"}]},{"id":139,"mfr":"BMW","model":"3시리즈","gen":"G20","cat":"세단","ys":2019,"ye":null,"engine":"B48 2.0 터보 (330i)","fuel":"가솔린","cc":1998,"trim":"기본","oil":{"visc":"0W-20","api":null,"ilsac":null,"type":"합성유 · BMW LL-17FE+ 인증","cap":5.3,"interval":20000,"severe":10000,"verified":false},"filters":[{"brand":"MANN-FILTER","pn":"HU 6014/1 z"}]},{"id":140,"mfr":"BMW","model":"3시리즈","gen":"G20","cat":"세단","ys":2019,"ye":2024,"engine":"B47 2.0 디젤 (320d)","fuel":"디젤","cc":1995,"trim":"기본","oil":{"visc":"5W-30","api":null,"ilsac":null,"type":"합성유 · BMW LL-04 인증","cap":5.5,"interval":20000,"severe":10000,"verified":false},"filters":[{"brand":"MANN-FILTER","pn":"HU 6004 x"}]},{"id":141,"mfr":"BMW","model":"5시리즈","gen":"F10","cat":"세단","ys":2010,"ye":2017,"engine":"N20 2.0 터보 (528i)","fuel":"가솔린","cc":1997,"trim":"기본","oil":{"visc":"0W-30","api":null,"ilsac":null,"type":"합성유 · BMW LL-01 인증","cap":5.0,"interval":20000,"severe":10000,"verified":false},"filters":[{"brand":"MANN-FILTER","pn":"HU 6014 z"}]},{"id":142,"mfr":"BMW","model":"5시리즈","gen":"F10","cat":"세단","ys":2010,"ye":2017,"engine":"N47 2.0 디젤 (520d)","fuel":"디젤","cc":1995,"trim":"기본","oil":{"visc":"5W-30","api":null,"ilsac":null,"type":"합성유 · BMW LL-04 인증","cap":5.2,"interval":20000,"severe":10000,"verified":true},"filters":[{"brand":"MANN-FILTER","pn":"HU 6004 x"}]},{"id":143,"mfr":"BMW","model":"5시리즈","gen":"G30","cat":"세단","ys":2017,"ye":2023,"engine":"B48 2.0 터보 (530i)","fuel":"가솔린","cc":1998,"trim":"기본","oil":{"visc":"0W-20","api":null,"ilsac":null,"type":"합성유 · BMW LL-17FE+ 인증","cap":5.3,"interval":20000,"severe":10000,"verified":false},"filters":[{"brand":"MANN-FILTER","pn":"HU 6014/1 z"}]},{"id":144,"mfr":"BMW","model":"5시리즈","gen":"G30","cat":"세단","ys":2017,"ye":2023,"engine":"B47 2.0 디젤 (520d)","fuel":"디젤","cc":1995,"trim":"기본","oil":{"visc":"5W-30","api":null,"ilsac":null,"type":"합성유 · BMW LL-04 인증","cap":5.5,"interval":20000,"severe":10000,"verified":false},"filters":[{"brand":"MANN-FILTER","pn":"HU 6004 x"}]},{"id":145,"mfr":"BMW","model":"5시리즈","gen":"G60","cat":"세단","ys":2023,"ye":null,"engine":"B48 2.0 터보 MHEV (520i)","fuel":"가솔린","cc":1998,"trim":"기본","oil":{"visc":"0W-20","api":null,"ilsac":null,"type":"합성유 · BMW LL-17FE+ 인증","cap":5.3,"interval":20000,"severe":10000,"verified":false},"filters":[{"brand":"MANN-FILTER","pn":"HU 6014/1 z"}]},{"id":146,"mfr":"BMW","model":"7시리즈","gen":"G11","cat":"세단","ys":2015,"ye":2022,"engine":"B58 3.0 터보 (740i)","fuel":"가솔린","cc":2998,"trim":"기본","oil":{"visc":"0W-30","api":null,"ilsac":null,"type":"합성유 · BMW LL-01 인증","cap":6.5,"interval":20000,"severe":10000,"verified":false},"filters":[{"brand":"BMW(OE)","pn":"11428583898"}]},{"id":147,"mfr":"BMW","model":"X3","gen":"G01","cat":"SUV","ys":2017,"ye":null,"engine":"B48 2.0 터보 (X3 20i/30i)","fuel":"가솔린","cc":1998,"trim":"기본","oil":{"visc":"0W-20","api":null,"ilsac":null,"type":"합성유 · BMW LL-17FE+ 인증","cap":5.3,"interval":20000,"severe":10000,"verified":false},"filters":[{"brand":"MANN-FILTER","pn":"HU 6014/1 z"}]},{"id":148,"mfr":"BMW","model":"X3","gen":"G01","cat":"SUV","ys":2017,"ye":null,"engine":"B47 2.0 디젤 (X3 20d)","fuel":"디젤","cc":1995,"trim":"기본","oil":{"visc":"5W-30","api":null,"ilsac":null,"type":"합성유 · BMW LL-04 인증","cap":5.5,"interval":20000,"severe":10000,"verified":false},"filters":[{"brand":"MANN-FILTER","pn":"HU 6004 x"}]},{"id":149,"mfr":"BMW","model":"X5","gen":"G05","cat":"SUV","ys":2018,"ye":null,"engine":"B58 3.0 터보 (X5 40i)","fuel":"가솔린","cc":2998,"trim":"기본","oil":{"visc":"0W-30","api":null,"ilsac":null,"type":"합성유 · BMW LL-01 인증","cap":6.5,"interval":20000,"severe":10000,"verified":false},"filters":[{"brand":"BMW(OE)","pn":"11428583898"}]},{"id":157,"mfr":"아우디","model":"A3","gen":"8V","cat":"세단","ys":2013,"ye":2020,"engine":"EA211 1.4 TFSI","fuel":"가솔린","cc":1395,"trim":"기본","oil":{"visc":"5W-30","api":null,"ilsac":null,"type":"합성유 · VW 502.00/504.00 인증","cap":4.0,"interval":15000,"severe":10000,"verified":false},"filters":[]},{"id":150,"mfr":"아우디","model":"A4","gen":"B8","cat":"세단","ys":2008,"ye":2016,"engine":"EA888 2.0 TFSI","fuel":"가솔린","cc":1984,"trim":"기본","oil":{"visc":"5W-30","api":null,"ilsac":null,"type":"합성유 · VW 502.00/504.00 인증","cap":4.6,"interval":15000,"severe":10000,"verified":false},"filters":[{"brand":"MANN-FILTER","pn":"W 719/45"}]},{"id":151,"mfr":"아우디","model":"A4","gen":"B9","cat":"세단","ys":2016,"ye":null,"engine":"EA888 Gen3 2.0 TFSI (40 TFSI)","fuel":"가솔린","cc":1984,"trim":"기본","oil":{"visc":"5W-30","api":null,"ilsac":null,"type":"합성유 · VW 502.00/504.00 인증","cap":5.0,"interval":15000,"severe":10000,"verified":false},"filters":[{"brand":"아우디(OE)","pn":"06L115562"}]},{"id":152,"mfr":"아우디","model":"A6","gen":"C7","cat":"세단","ys":2011,"ye":2018,"engine":"EA888 2.0 TFSI","fuel":"가솔린","cc":1984,"trim":"기본","oil":{"visc":"5W-30","api":null,"ilsac":null,"type":"합성유 · VW 502.00/504.00 인증","cap":4.7,"interval":15000,"severe":10000,"verified":false},"filters":[{"brand":"아우디(OE)","pn":"06L115562"}]},{"id":153,"mfr":"아우디","model":"A6","gen":"C7","cat":"세단","ys":2011,"ye":2018,"engine":"EA897 3.0 TDI","fuel":"디젤","cc":2967,"trim":"기본","oil":{"visc":"5W-30","api":null,"ilsac":null,"type":"합성유 · VW 507.00 인증","cap":7.0,"interval":15000,"severe":10000,"verified":false},"filters":[]},{"id":154,"mfr":"아우디","model":"A6","gen":"C8","cat":"세단","ys":2018,"ye":null,"engine":"EA888 Gen3 2.0 TFSI (45 TFSI)","fuel":"가솔린","cc":1984,"trim":"기본","oil":{"visc":"5W-30","api":null,"ilsac":null,"type":"합성유 · VW 502.00/504.00 인증","cap":5.0,"interval":15000,"severe":10000,"verified":false},"filters":[{"brand":"아우디(OE)","pn":"06L115562"}]},{"id":155,"mfr":"아우디","model":"Q5","gen":"FY","cat":"SUV","ys":2017,"ye":null,"engine":"EA888 Gen3 2.0 TFSI (45 TFSI)","fuel":"가솔린","cc":1984,"trim":"기본","oil":{"visc":"5W-30","api":null,"ilsac":null,"type":"합성유 · VW 502.00/504.00 인증","cap":5.0,"interval":15000,"severe":10000,"verified":false},"filters":[{"brand":"아우디(OE)","pn":"06L115562"}]},{"id":156,"mfr":"아우디","model":"Q7","gen":"4M","cat":"SUV","ys":2015,"ye":null,"engine":"EA897 3.0 TDI (45 TDI)","fuel":"디젤","cc":2967,"trim":"기본","oil":{"visc":"5W-30","api":null,"ilsac":null,"type":"합성유 · VW 507.00 인증","cap":7.5,"interval":15000,"severe":10000,"verified":false},"filters":[]},{"id":158,"mfr":"렉서스","model":"ES","gen":"XV60","cat":"세단","ys":2012,"ye":2018,"engine":"2AR-FSE 2.5 HEV (ES300h)","fuel":"하이브리드","cc":2494,"trim":"기본","oil":{"visc":"0W-20","api":"SN 이상","ilsac":"GF-5 이상","type":"합성유","cap":4.4,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"토요타(OE)","pn":"04152-YZZA1"}]},{"id":159,"mfr":"렉서스","model":"ES","gen":"XV70","cat":"세단","ys":2018,"ye":null,"engine":"A25A-FXS 2.5 HEV (ES300h)","fuel":"하이브리드","cc":2487,"trim":"기본","oil":{"visc":"0W-16","api":"SN 이상","ilsac":"GF-5 이상","type":"저점도 합성유 (0W-20 대체 가능)","cap":4.5,"interval":15000,"severe":7500,"verified":true},"filters":[{"brand":"토요타(OE)","pn":"04152-YZZA1"}]},{"id":160,"mfr":"렉서스","model":"NX","gen":"AZ20","cat":"SUV","ys":2021,"ye":null,"engine":"A25A-FXS 2.5 HEV (NX350h)","fuel":"하이브리드","cc":2487,"trim":"기본","oil":{"visc":"0W-20","api":"SN 이상","ilsac":"GF-5 이상","type":"합성유","cap":4.5,"interval":15000,"severe":7500,"verified":true},"filters":[{"brand":"토요타(OE)","pn":"04152-YZZA1"}]},{"id":161,"mfr":"렉서스","model":"RX","gen":"AL20","cat":"SUV","ys":2015,"ye":2022,"engine":"2GR-FKS 3.5 (RX350)","fuel":"가솔린","cc":3456,"trim":"기본","oil":{"visc":"0W-20","api":"SN 이상","ilsac":"GF-5 이상","type":"합성유","cap":5.8,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"토요타(OE)","pn":"04152-YZZA1"}]},{"id":162,"mfr":"렉서스","model":"RX","gen":"AL30","cat":"SUV","ys":2022,"ye":null,"engine":"A25A-FXS 2.5 HEV (RX350h)","fuel":"하이브리드","cc":2487,"trim":"기본","oil":{"visc":"0W-20","api":"SN 이상","ilsac":"GF-5 이상","type":"합성유","cap":4.5,"interval":15000,"severe":7500,"verified":false},"filters":[{"brand":"토요타(OE)","pn":"04152-YZZA1"}]},{"id":163,"mfr":"렉서스","model":"UX","gen":"MZAA10","cat":"SUV","ys":2019,"ye":null,"engine":"M20A-FXS 2.0 HEV (UX250h)","fuel":"하이브리드","cc":1987,"trim":"기본","oil":{"visc":"0W-20","api":"SN 이상","ilsac":"GF-5 이상","type":"합성유","cap":4.2,"interval":15000,"severe":7500,"verified":false},"filters":[]},{"id":168,"mfr":"KGM","model":"렉스턴","gen":"G4/Y400","cat":"SUV","ys":2017,"ye":null,"engine":"e-XDi220 2.2 디젤","fuel":"디젤","cc":2157,"trim":"기본","oil":{"visc":"5W-30","api":null,"ilsac":null,"type":"합성유 (ACEA C3)","cap":6.5,"interval":15000,"severe":10000,"verified":false},"filters":[]},{"id":166,"mfr":"KGM","model":"코란도","gen":"C300","cat":"SUV","ys":2019,"ye":null,"engine":"1.5 T-GDI","fuel":"가솔린","cc":1497,"trim":"기본","oil":{"visc":"5W-30","api":"SN 이상","ilsac":null,"type":"합성유","cap":4.5,"interval":15000,"severe":7500,"verified":false},"filters":[]},{"id":167,"mfr":"KGM","model":"코란도","gen":"C300","cat":"SUV","ys":2019,"ye":null,"engine":"e-XDi160 1.6 디젤","fuel":"디젤","cc":1597,"trim":"기본","oil":{"visc":"5W-30","api":null,"ilsac":null,"type":"합성유 (ACEA C3)","cap":5.5,"interval":15000,"severe":10000,"verified":false},"filters":[]},{"id":169,"mfr":"KGM","model":"토레스","gen":"J100","cat":"SUV","ys":2022,"ye":null,"engine":"1.5 T-GDI","fuel":"가솔린","cc":1497,"trim":"기본","oil":{"visc":"5W-30","api":"SN 이상","ilsac":null,"type":"합성유","cap":4.5,"interval":15000,"severe":7500,"verified":false},"filters":[]},{"id":164,"mfr":"KGM","model":"티볼리","gen":"X100","cat":"SUV","ys":2015,"ye":null,"engine":"e-XGi160 1.6 가솔린","fuel":"가솔린","cc":1597,"trim":"기본","oil":{"visc":"5W-30","api":"SN 이상","ilsac":null,"type":"합성유","cap":4.0,"interval":15000,"severe":7500,"verified":false},"filters":[]},{"id":165,"mfr":"KGM","model":"티볼리","gen":"X100","cat":"SUV","ys":2019,"ye":null,"engine":"1.5 T-GDI","fuel":"가솔린","cc":1497,"trim":"기본","oil":{"visc":"5W-30","api":"SN 이상","ilsac":null,"type":"합성유","cap":4.5,"interval":15000,"severe":7500,"verified":false},"filters":[]},{"id":172,"mfr":"르노코리아","model":"QM6","gen":"HZG","cat":"SUV","ys":2016,"ye":null,"engine":"2.0 GDe","fuel":"가솔린","cc":1998,"trim":"기본","oil":{"visc":"5W-30","api":null,"ilsac":null,"type":"합성유 (RN0700/0710)","cap":4.5,"interval":15000,"severe":7500,"verified":false},"filters":[]},{"id":173,"mfr":"르노코리아","model":"QM6","gen":"HZG","cat":"SUV","ys":2016,"ye":null,"engine":"2.0 LPe","fuel":"LPG","cc":1998,"trim":"기본","oil":{"visc":"5W-30","api":null,"ilsac":null,"type":"합성유 (RN0700/0710)","cap":4.5,"interval":15000,"severe":7500,"verified":false},"filters":[]},{"id":170,"mfr":"르노코리아","model":"SM6","gen":"LFD","cat":"세단","ys":2016,"ye":null,"engine":"2.0 GDe","fuel":"가솔린","cc":1998,"trim":"기본","oil":{"visc":"5W-30","api":null,"ilsac":null,"type":"합성유 (RN0700/0710)","cap":4.5,"interval":15000,"severe":7500,"verified":false},"filters":[]},{"id":171,"mfr":"르노코리아","model":"SM6","gen":"LFD","cat":"세단","ys":2016,"ye":null,"engine":"1.3 TCe","fuel":"가솔린","cc":1332,"trim":"기본","oil":{"visc":"5W-30","api":null,"ilsac":null,"type":"합성유 (RN0700/0710)","cap":4.8,"interval":15000,"severe":7500,"verified":false},"filters":[]},{"id":174,"mfr":"르노코리아","model":"XM3(아르카나)","gen":"JL1","cat":"SUV","ys":2020,"ye":null,"engine":"1.3 TCe","fuel":"가솔린","cc":1332,"trim":"기본","oil":{"visc":"5W-30","api":null,"ilsac":null,"type":"합성유 (RN0700/0710)","cap":4.8,"interval":15000,"severe":7500,"verified":false},"filters":[]},{"id":175,"mfr":"르노코리아","model":"XM3(아르카나)","gen":"JL1","cat":"SUV","ys":2020,"ye":null,"engine":"1.6 GTe","fuel":"가솔린","cc":1598,"trim":"기본","oil":{"visc":"5W-30","api":null,"ilsac":null,"type":"합성유 (RN0700/0710)","cap":4.2,"interval":15000,"severe":7500,"verified":false},"filters":[]},{"id":176,"mfr":"르노코리아","model":"그랑 콜레오스","gen":"HC","cat":"SUV","ys":2024,"ye":null,"engine":"1.5 터보 HEV","fuel":"하이브리드","cc":1499,"trim":"기본","oil":{"visc":"5W-30","api":null,"ilsac":null,"type":"합성유 (RN0700/0710)","cap":4.5,"interval":15000,"severe":7500,"verified":false},"filters":[]},{"id":179,"mfr":"한국GM","model":"말리부","gen":"9세대","cat":"세단","ys":2016,"ye":2022,"engine":"1.5 터보","fuel":"가솔린","cc":1490,"trim":"기본","oil":{"visc":"5W-30","api":null,"ilsac":null,"type":"합성유 (dexos1 Gen3)","cap":4.7,"interval":12000,"severe":6000,"verified":false},"filters":[{"brand":"ACDelco","pn":"PF66"}]},{"id":180,"mfr":"한국GM","model":"말리부","gen":"9세대","cat":"세단","ys":2016,"ye":2022,"engine":"LTG 2.0 터보","fuel":"가솔린","cc":1998,"trim":"기본","oil":{"visc":"5W-30","api":null,"ilsac":null,"type":"합성유 (dexos1 Gen3)","cap":4.7,"interval":12000,"severe":6000,"verified":false},"filters":[{"brand":"ACDelco","pn":"PF64"}]},{"id":177,"mfr":"한국GM","model":"스파크","gen":"M300/M400","cat":"소형차","ys":2011,"ye":2022,"engine":"S-TEC 1.0","fuel":"가솔린","cc":995,"trim":"기본","oil":{"visc":"5W-30","api":null,"ilsac":null,"type":"합성유 (dexos1 Gen3)","cap":3.5,"interval":12000,"severe":6000,"verified":false},"filters":[]},{"id":178,"mfr":"한국GM","model":"크루즈","gen":"J300","cat":"세단","ys":2011,"ye":2018,"engine":"1.8 가솔린","fuel":"가솔린","cc":1796,"trim":"기본","oil":{"visc":"5W-30","api":null,"ilsac":null,"type":"합성유 (dexos1 Gen3)","cap":4.5,"interval":12000,"severe":6000,"verified":false},"filters":[]},{"id":181,"mfr":"한국GM","model":"트랙스","gen":"TU","cat":"SUV","ys":2013,"ye":2022,"engine":"1.4 터보","fuel":"가솔린","cc":1362,"trim":"기본","oil":{"visc":"5W-30","api":null,"ilsac":null,"type":"합성유 (dexos1 Gen3)","cap":4.0,"interval":12000,"severe":6000,"verified":false},"filters":[]},{"id":183,"mfr":"한국GM","model":"트랙스 크로스오버","gen":"9BYC","cat":"SUV","ys":2023,"ye":null,"engine":"E3LB 1.2 터보","fuel":"가솔린","cc":1199,"trim":"기본","oil":{"visc":"5W-30","api":null,"ilsac":null,"type":"합성유 (dexos1 Gen3)","cap":4.2,"interval":12000,"severe":6000,"verified":false},"filters":[]},{"id":182,"mfr":"한국GM","model":"트레일블레이저","gen":"9BUC","cat":"SUV","ys":2020,"ye":null,"engine":"E3LB 1.35 터보","fuel":"가솔린","cc":1341,"trim":"기본","oil":{"visc":"5W-30","api":null,"ilsac":null,"type":"합성유 (dexos1 Gen3)","cap":4.2,"interval":12000,"severe":6000,"verified":false},"filters":[]}];
+const PRODUCT_CACHE = {"04152-YZZA1 오일필터":[{"name":"현대모비스 순정 오일필터 04152-YZZA1","price":4900,"url":"https://www.coupang.com/np/search?q=04152-YZZA1%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":true,"manual":false},{"name":"04152-YZZA1 호환 오일필터 3개 세트","price":12800,"url":"https://www.coupang.com/np/search?q=04152-YZZA1%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":false,"manual":false},{"name":"불스원 프리미엄 오일필터 04152-YZZA1 호환","price":6300,"url":"https://www.coupang.com/np/search?q=04152-YZZA1%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":true,"manual":false}],"06L115562 오일필터":[{"name":"현대모비스 순정 오일필터 06L115562","price":4900,"url":"https://www.coupang.com/np/search?q=06L115562%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":true,"manual":false},{"name":"06L115562 호환 오일필터 3개 세트","price":12800,"url":"https://www.coupang.com/np/search?q=06L115562%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":false,"manual":false},{"name":"불스원 프리미엄 오일필터 06L115562 호환","price":6300,"url":"https://www.coupang.com/np/search?q=06L115562%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":true,"manual":false}],"0W-16 합성 엔진오일":[{"name":"킥스 PAO1 0W-16 합성엔진오일 4L","price":32900,"url":"https://www.coupang.com/np/search?q=0W-16%20%ED%95%A9%EC%84%B1%20%EC%97%94%EC%A7%84%EC%98%A4%EC%9D%BC","rocket":true,"manual":false},{"name":"모빌1 0W-16 어드밴스드 합성유 4L","price":47500,"url":"https://www.coupang.com/np/search?q=0W-16%20%ED%95%A9%EC%84%B1%20%EC%97%94%EC%A7%84%EC%98%A4%EC%9D%BC","rocket":true,"manual":false},{"name":"지크 X9 0W-16 100% 합성 4L","price":29800,"url":"https://www.coupang.com/np/search?q=0W-16%20%ED%95%A9%EC%84%B1%20%EC%97%94%EC%A7%84%EC%98%A4%EC%9D%BC","rocket":false,"manual":false},{"name":"캐스트롤 엣지 0W-16 티타늄 4L","price":41200,"url":"https://www.coupang.com/np/search?q=0W-16%20%ED%95%A9%EC%84%B1%20%EC%97%94%EC%A7%84%EC%98%A4%EC%9D%BC","rocket":true,"manual":false}],"0W-20 합성 엔진오일":[{"name":"킥스 PAO1 0W-20 합성엔진오일 4L","price":32900,"url":"https://www.coupang.com/np/search?q=0W-20%20%ED%95%A9%EC%84%B1%20%EC%97%94%EC%A7%84%EC%98%A4%EC%9D%BC","rocket":true,"manual":false},{"name":"모빌1 0W-20 어드밴스드 합성유 4L","price":47500,"url":"https://www.coupang.com/np/search?q=0W-20%20%ED%95%A9%EC%84%B1%20%EC%97%94%EC%A7%84%EC%98%A4%EC%9D%BC","rocket":true,"manual":false},{"name":"지크 X9 0W-20 100% 합성 4L","price":29800,"url":"https://www.coupang.com/np/search?q=0W-20%20%ED%95%A9%EC%84%B1%20%EC%97%94%EC%A7%84%EC%98%A4%EC%9D%BC","rocket":false,"manual":false},{"name":"캐스트롤 엣지 0W-20 티타늄 4L","price":41200,"url":"https://www.coupang.com/np/search?q=0W-20%20%ED%95%A9%EC%84%B1%20%EC%97%94%EC%A7%84%EC%98%A4%EC%9D%BC","rocket":true,"manual":false}],"0W-30 합성 엔진오일":[{"name":"킥스 PAO1 0W-30 합성엔진오일 4L","price":32900,"url":"https://www.coupang.com/np/search?q=0W-30%20%ED%95%A9%EC%84%B1%20%EC%97%94%EC%A7%84%EC%98%A4%EC%9D%BC","rocket":true,"manual":false},{"name":"모빌1 0W-30 어드밴스드 합성유 4L","price":47500,"url":"https://www.coupang.com/np/search?q=0W-30%20%ED%95%A9%EC%84%B1%20%EC%97%94%EC%A7%84%EC%98%A4%EC%9D%BC","rocket":true,"manual":false},{"name":"지크 X9 0W-30 100% 합성 4L","price":29800,"url":"https://www.coupang.com/np/search?q=0W-30%20%ED%95%A9%EC%84%B1%20%EC%97%94%EC%A7%84%EC%98%A4%EC%9D%BC","rocket":false,"manual":false},{"name":"캐스트롤 엣지 0W-30 티타늄 4L","price":41200,"url":"https://www.coupang.com/np/search?q=0W-30%20%ED%95%A9%EC%84%B1%20%EC%97%94%EC%A7%84%EC%98%A4%EC%9D%BC","rocket":true,"manual":false}],"11428583898 오일필터":[{"name":"현대모비스 순정 오일필터 11428583898","price":4900,"url":"https://www.coupang.com/np/search?q=11428583898%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":true,"manual":false},{"name":"11428583898 호환 오일필터 3개 세트","price":12800,"url":"https://www.coupang.com/np/search?q=11428583898%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":false,"manual":false},{"name":"불스원 프리미엄 오일필터 11428583898 호환","price":6300,"url":"https://www.coupang.com/np/search?q=11428583898%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":true,"manual":false}],"26300-02503 오일필터":[{"name":"현대모비스 순정 오일필터 26300-02503","price":4900,"url":"https://www.coupang.com/np/search?q=26300-02503%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":true,"manual":false},{"name":"26300-02503 호환 오일필터 3개 세트","price":12800,"url":"https://www.coupang.com/np/search?q=26300-02503%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":false,"manual":false},{"name":"불스원 프리미엄 오일필터 26300-02503 호환","price":6300,"url":"https://www.coupang.com/np/search?q=26300-02503%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":true,"manual":false}],"26300-35505 오일필터":[{"name":"[예시] 현대모비스 순정 오일필터 26300-35505 (실제 URL로 교체 필요)","price":4900,"url":"https://www.coupang.com/vp/products/1234567890?itemId=111&vendorItemId=222","rocket":true,"manual":true},{"name":"현대모비스 순정 오일필터 26300-35505","price":4900,"url":"https://www.coupang.com/np/search?q=26300-35505%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":true,"manual":false},{"name":"26300-35505 호환 오일필터 3개 세트","price":12800,"url":"https://www.coupang.com/np/search?q=26300-35505%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":false,"manual":false},{"name":"불스원 프리미엄 오일필터 26300-35505 호환","price":6300,"url":"https://www.coupang.com/np/search?q=26300-35505%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":true,"manual":false}],"26320-2A500 오일필터":[{"name":"현대모비스 순정 오일필터 26320-2A500","price":4900,"url":"https://www.coupang.com/np/search?q=26320-2A500%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":true,"manual":false},{"name":"26320-2A500 호환 오일필터 3개 세트","price":12800,"url":"https://www.coupang.com/np/search?q=26320-2A500%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":false,"manual":false},{"name":"불스원 프리미엄 오일필터 26320-2A500 호환","price":6300,"url":"https://www.coupang.com/np/search?q=26320-2A500%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":true,"manual":false}],"26320-2R000 오일필터":[{"name":"현대모비스 순정 오일필터 26320-2R000","price":4900,"url":"https://www.coupang.com/np/search?q=26320-2R000%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":true,"manual":false},{"name":"26320-2R000 호환 오일필터 3개 세트","price":12800,"url":"https://www.coupang.com/np/search?q=26320-2R000%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":false,"manual":false},{"name":"불스원 프리미엄 오일필터 26320-2R000 호환","price":6300,"url":"https://www.coupang.com/np/search?q=26320-2R000%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":true,"manual":false}],"26320-3C30A 오일필터":[{"name":"현대모비스 순정 오일필터 26320-3C30A","price":4900,"url":"https://www.coupang.com/np/search?q=26320-3C30A%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":true,"manual":false},{"name":"26320-3C30A 호환 오일필터 3개 세트","price":12800,"url":"https://www.coupang.com/np/search?q=26320-3C30A%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":false,"manual":false},{"name":"불스원 프리미엄 오일필터 26320-3C30A 호환","price":6300,"url":"https://www.coupang.com/np/search?q=26320-3C30A%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":true,"manual":false}],"26320-3CKA0 오일필터":[{"name":"현대모비스 순정 오일필터 26320-3CKA0","price":4900,"url":"https://www.coupang.com/np/search?q=26320-3CKA0%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":true,"manual":false},{"name":"26320-3CKA0 호환 오일필터 3개 세트","price":12800,"url":"https://www.coupang.com/np/search?q=26320-3CKA0%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":false,"manual":false},{"name":"불스원 프리미엄 오일필터 26320-3CKA0 호환","price":6300,"url":"https://www.coupang.com/np/search?q=26320-3CKA0%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":true,"manual":false}],"26350-2M000 오일필터":[{"name":"현대모비스 순정 오일필터 26350-2M000","price":4900,"url":"https://www.coupang.com/np/search?q=26350-2M000%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":true,"manual":false},{"name":"26350-2M000 호환 오일필터 3개 세트","price":12800,"url":"https://www.coupang.com/np/search?q=26350-2M000%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":false,"manual":false},{"name":"불스원 프리미엄 오일필터 26350-2M000 호환","price":6300,"url":"https://www.coupang.com/np/search?q=26350-2M000%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":true,"manual":false}],"26350-2S000 오일필터":[{"name":"현대모비스 순정 오일필터 26350-2S000","price":4900,"url":"https://www.coupang.com/np/search?q=26350-2S000%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":true,"manual":false},{"name":"26350-2S000 호환 오일필터 3개 세트","price":12800,"url":"https://www.coupang.com/np/search?q=26350-2S000%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":false,"manual":false},{"name":"불스원 프리미엄 오일필터 26350-2S000 호환","price":6300,"url":"https://www.coupang.com/np/search?q=26350-2S000%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":true,"manual":false}],"5W-20 합성 엔진오일":[{"name":"킥스 PAO1 5W-20 합성엔진오일 4L","price":32900,"url":"https://www.coupang.com/np/search?q=5W-20%20%ED%95%A9%EC%84%B1%20%EC%97%94%EC%A7%84%EC%98%A4%EC%9D%BC","rocket":true,"manual":false},{"name":"모빌1 5W-20 어드밴스드 합성유 4L","price":47500,"url":"https://www.coupang.com/np/search?q=5W-20%20%ED%95%A9%EC%84%B1%20%EC%97%94%EC%A7%84%EC%98%A4%EC%9D%BC","rocket":true,"manual":false},{"name":"지크 X9 5W-20 100% 합성 4L","price":29800,"url":"https://www.coupang.com/np/search?q=5W-20%20%ED%95%A9%EC%84%B1%20%EC%97%94%EC%A7%84%EC%98%A4%EC%9D%BC","rocket":false,"manual":false},{"name":"캐스트롤 엣지 5W-20 티타늄 4L","price":41200,"url":"https://www.coupang.com/np/search?q=5W-20%20%ED%95%A9%EC%84%B1%20%EC%97%94%EC%A7%84%EC%98%A4%EC%9D%BC","rocket":true,"manual":false}],"5W-30 합성 엔진오일":[{"name":"킥스 PAO1 5W-30 합성엔진오일 4L","price":32900,"url":"https://www.coupang.com/np/search?q=5W-30%20%ED%95%A9%EC%84%B1%20%EC%97%94%EC%A7%84%EC%98%A4%EC%9D%BC","rocket":true,"manual":false},{"name":"모빌1 5W-30 어드밴스드 합성유 4L","price":47500,"url":"https://www.coupang.com/np/search?q=5W-30%20%ED%95%A9%EC%84%B1%20%EC%97%94%EC%A7%84%EC%98%A4%EC%9D%BC","rocket":true,"manual":false},{"name":"지크 X9 5W-30 100% 합성 4L","price":29800,"url":"https://www.coupang.com/np/search?q=5W-30%20%ED%95%A9%EC%84%B1%20%EC%97%94%EC%A7%84%EC%98%A4%EC%9D%BC","rocket":false,"manual":false},{"name":"캐스트롤 엣지 5W-30 티타늄 4L","price":41200,"url":"https://www.coupang.com/np/search?q=5W-30%20%ED%95%A9%EC%84%B1%20%EC%97%94%EC%A7%84%EC%98%A4%EC%9D%BC","rocket":true,"manual":false}],"A2701800109 오일필터":[{"name":"현대모비스 순정 오일필터 A2701800109","price":4900,"url":"https://www.coupang.com/np/search?q=A2701800109%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":true,"manual":false},{"name":"A2701800109 호환 오일필터 3개 세트","price":12800,"url":"https://www.coupang.com/np/search?q=A2701800109%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":false,"manual":false},{"name":"불스원 프리미엄 오일필터 A2701800109 호환","price":6300,"url":"https://www.coupang.com/np/search?q=A2701800109%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":true,"manual":false}],"A2761800009 오일필터":[{"name":"현대모비스 순정 오일필터 A2761800009","price":4900,"url":"https://www.coupang.com/np/search?q=A2761800009%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":true,"manual":false},{"name":"A2761800009 호환 오일필터 3개 세트","price":12800,"url":"https://www.coupang.com/np/search?q=A2761800009%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":false,"manual":false},{"name":"불스원 프리미엄 오일필터 A2761800009 호환","price":6300,"url":"https://www.coupang.com/np/search?q=A2761800009%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":true,"manual":false}],"HU 6004 x 오일필터":[{"name":"현대모비스 순정 오일필터 HU","price":4900,"url":"https://www.coupang.com/np/search?q=HU%206004%20x%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":true,"manual":false},{"name":"HU 호환 오일필터 3개 세트","price":12800,"url":"https://www.coupang.com/np/search?q=HU%206004%20x%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":false,"manual":false},{"name":"불스원 프리미엄 오일필터 HU 호환","price":6300,"url":"https://www.coupang.com/np/search?q=HU%206004%20x%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":true,"manual":false}],"HU 6014 z 오일필터":[{"name":"현대모비스 순정 오일필터 HU","price":4900,"url":"https://www.coupang.com/np/search?q=HU%206014%20z%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":true,"manual":false},{"name":"HU 호환 오일필터 3개 세트","price":12800,"url":"https://www.coupang.com/np/search?q=HU%206014%20z%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":false,"manual":false},{"name":"불스원 프리미엄 오일필터 HU 호환","price":6300,"url":"https://www.coupang.com/np/search?q=HU%206014%20z%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":true,"manual":false}],"HU 6014/1 z 오일필터":[{"name":"현대모비스 순정 오일필터 HU","price":4900,"url":"https://www.coupang.com/np/search?q=HU%206014/1%20z%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":true,"manual":false},{"name":"HU 호환 오일필터 3개 세트","price":12800,"url":"https://www.coupang.com/np/search?q=HU%206014/1%20z%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":false,"manual":false},{"name":"불스원 프리미엄 오일필터 HU 호환","price":6300,"url":"https://www.coupang.com/np/search?q=HU%206014/1%20z%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":true,"manual":false}],"HU 7010 z 오일필터":[{"name":"현대모비스 순정 오일필터 HU","price":4900,"url":"https://www.coupang.com/np/search?q=HU%207010%20z%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":true,"manual":false},{"name":"HU 호환 오일필터 3개 세트","price":12800,"url":"https://www.coupang.com/np/search?q=HU%207010%20z%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":false,"manual":false},{"name":"불스원 프리미엄 오일필터 HU 호환","price":6300,"url":"https://www.coupang.com/np/search?q=HU%207010%20z%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":true,"manual":false}],"O 0367 오일필터":[{"name":"현대모비스 순정 오일필터 O","price":4900,"url":"https://www.coupang.com/np/search?q=O%200367%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":true,"manual":false},{"name":"O 호환 오일필터 3개 세트","price":12800,"url":"https://www.coupang.com/np/search?q=O%200367%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":false,"manual":false},{"name":"불스원 프리미엄 오일필터 O 호환","price":6300,"url":"https://www.coupang.com/np/search?q=O%200367%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":true,"manual":false}],"PF64 오일필터":[{"name":"현대모비스 순정 오일필터 PF64","price":4900,"url":"https://www.coupang.com/np/search?q=PF64%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":true,"manual":false},{"name":"PF64 호환 오일필터 3개 세트","price":12800,"url":"https://www.coupang.com/np/search?q=PF64%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":false,"manual":false},{"name":"불스원 프리미엄 오일필터 PF64 호환","price":6300,"url":"https://www.coupang.com/np/search?q=PF64%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":true,"manual":false}],"PF66 오일필터":[{"name":"현대모비스 순정 오일필터 PF66","price":4900,"url":"https://www.coupang.com/np/search?q=PF66%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":true,"manual":false},{"name":"PF66 호환 오일필터 3개 세트","price":12800,"url":"https://www.coupang.com/np/search?q=PF66%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":false,"manual":false},{"name":"불스원 프리미엄 오일필터 PF66 호환","price":6300,"url":"https://www.coupang.com/np/search?q=PF66%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":true,"manual":false}],"W 719/45 오일필터":[{"name":"현대모비스 순정 오일필터 W","price":4900,"url":"https://www.coupang.com/np/search?q=W%20719/45%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":true,"manual":false},{"name":"W 호환 오일필터 3개 세트","price":12800,"url":"https://www.coupang.com/np/search?q=W%20719/45%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":false,"manual":false},{"name":"불스원 프리미엄 오일필터 W 호환","price":6300,"url":"https://www.coupang.com/np/search?q=W%20719/45%20%EC%98%A4%EC%9D%BC%ED%95%84%ED%84%B0","rocket":true,"manual":false}]};
+const CACHE_DATE = "2026-07-12";
+
+const WMI = {
+  "KMH":"현대","KM8":"현대","KMF":"현대",
+  "KNA":"기아","KND":"기아","KNC":"기아","KNH":"기아",
+  "KMT":"현대",
+  "WDD":"벤츠","WDC":"벤츠","W1K":"벤츠","W1N":"벤츠","W1V":"벤츠",
+  "WBA":"BMW","WBS":"BMW","WBY":"BMW","WBX":"BMW",
+  "WAU":"아우디","WA1":"아우디",
+  "JTH":"렉서스","JTJ":"렉서스","JTE":"렉서스",
+  "KPT":"KGM","KPA":"KGM",
+  "KNM":"르노코리아","VF1":"르노코리아",
+  "KL1":"한국GM","KL4":"한국GM","KL7":"한국GM","KLY":"한국GM"
+};
+const YEAR_CODE = {A:2010,B:2011,C:2012,D:2013,E:2014,F:2015,G:2016,H:2017,J:2018,K:2019,L:2020,M:2021,N:2022,P:2023,R:2024,S:2025,T:2026,V:2027,W:2028,X:2029,Y:2030};
+
+const $ = s => document.querySelector(s);
+let sel = {mfr:null, model:null, year:null, yearKnown:null, engine:null};
+const STEPS = ["mfr","model","year","engine"];
+
+function scrollToCard(){
+  document.getElementById("finder-card").scrollIntoView({behavior:"smooth", block:"start"});
+}
+function goStep(step){
+  STEPS.forEach(s=>{
+    const el = document.getElementById("step-"+s);
+    if(el) el.classList.toggle("hidden", s!==step);
+  });
+  renderSummary();
+  $("#result").innerHTML = "";
+  scrollToCard();
+}
+function resetFrom(step){
+  const i = STEPS.indexOf(step);
+  if(i<=0){ sel.mfr=null; }
+  if(i<=1){ sel.model=null; }
+  if(i<=2){ sel.year=null; sel.yearKnown=null; }
+  sel.engine=null;
+}
+function renderSummary(){
+  const chips = [];
+  if(sel.mfr)   chips.push({step:"mfr",   label:sel.mfr});
+  if(sel.model) chips.push({step:"model", label:sel.model});
+  if(sel.yearKnown!==null) chips.push({step:"year", label: sel.year ? sel.year+"년식" : "연식 모름"});
+  if(sel.engine) chips.push({step:"engine", label:sel.engine});
+  const bar = $("#sum-bar");
+  bar.classList.toggle("hidden", chips.length===0);
+  bar.innerHTML = chips.map(c=>
+    `<button class="sum-chip" data-step="${c.step}">${c.label} <span class="edit">수정</span></button>`).join("");
+  bar.querySelectorAll(".sum-chip").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      const step = b.dataset.step;
+      resetFrom(step);
+      if(step==="mfr"){ goStep("mfr"); }
+      else if(step==="model"){ renderModels(); goStep("model"); }
+      else if(step==="year"){ renderYearStep(); goStep("year"); }
+      else { renderEngines(sel.year, sel.yearKnown===false); goStep("engine"); }
+    });
+  });
+}
+
+const MFR_GROUPS = [
+  {label:"국산", brands:["현대","기아","KGM","르노코리아","한국GM"]},
+  {label:"수입", brands:["벤츠","BMW","아우디","렉서스"]}
+];
+function renderMfrs(){
+  const avail = new Set(DATA.map(v=>v.mfr));
+  $("#mfr-choices").innerHTML = MFR_GROUPS.map(g=>{
+    const brands = g.brands.filter(b=>avail.has(b));
+    if(!brands.length) return "";
+    return `<div class="group-block"><div class="gen-head">${g.label}</div>
+      <div class="group-chips">${brands.map(m=>
+        `<button class="chip" aria-pressed="false" data-mfr="${m}">${m}</button>`).join("")}</div></div>`;
+  }).join("");
+  $("#mfr-choices").querySelectorAll(".chip").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      resetFrom("mfr");
+      sel.mfr = b.dataset.mfr;
+      $("#mfr-choices").querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed", x===b));
+      renderModels();
+      goStep("model");
+    });
+  });
+}
+const CAT_ORDER = ["세단","SUV","소형차","미니밴"];
+function renderModels(){
+  const list = DATA.filter(v=>v.mfr===sel.mfr);
+  const byCat = {};
+  for(const v of list){
+    const c = v.cat || "기타";
+    (byCat[c] = byCat[c] || new Set()).add(v.model);
+  }
+  $("#model-choices").innerHTML = CAT_ORDER.filter(c=>byCat[c]).map(c=>
+    `<div class="group-block"><div class="gen-head">${c}</div>
+      <div class="group-chips">${[...byCat[c]].map(m=>
+        `<button class="chip" aria-pressed="false" data-model="${m}">${m}</button>`).join("")}</div></div>`
+  ).join("");
+  $("#model-choices").querySelectorAll(".chip").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      resetFrom("model");
+      sel.model = b.dataset.model;
+      $("#model-choices").querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed", x===b));
+      renderYearStep();
+      goStep("year");
+    });
+  });
+}
+function renderYearStep(){
+  const nowY = new Date().getFullYear();
+  const selEl = $("#year-select");
+  selEl.innerHTML = '<option value="">몇 년식인가요?</option>' +
+    Array.from({length:nowY-2000+1},(_,i)=>nowY-i)
+      .map(y=>`<option value="${y}">${y}년식</option>`).join("");
+  selEl.value = "";
+  selEl.onchange = ()=>{
+    if(!selEl.value) return;
+    sel.year = +selEl.value; sel.yearKnown = true;
+    renderEngines(sel.year);
+    goStep("engine");
+  };
+  $("#year-unknown").onclick = ()=>{
+    sel.year = null; sel.yearKnown = false;
+    renderEngines(null, true);
+    goStep("engine");
+  };
+}
+function fuelClass(f){ return f==="하이브리드" ? "fuel hev" : (f==="디젤" ? "fuel dsl" : "fuel"); }
+function engineRow(v){
+  const yr = v.ye ? `${v.ys}–${v.ye}` : `${v.ys}–현재`;
+  const trim = v.trim && v.trim !== "기본" ? ` · ${v.trim}` : "";
+  return `<button class="engine-item" data-id="${v.id}">
+    <span><span class="en">${v.engine}${trim}</span><br>
+    <span class="meta">${v.gen} · ${yr}${v.cc ? " · "+v.cc.toLocaleString()+"cc" : ""}</span></span>
+    <span class="${fuelClass(v.fuel)}">${v.fuel}</span>
+  </button>`;
+}
+function bindEngineList(container, fromVin){
+  container.querySelectorAll(".engine-item").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      const v = DATA.find(x=>x.id===+b.dataset.id);
+      if(!fromVin){
+        sel.engine = v.engine + (v.trim && v.trim!=="기본" ? " · "+v.trim : "");
+        STEPS.forEach(s=>document.getElementById("step-"+s).classList.add("hidden"));
+        renderSummary();
+      }
+      showResult(v.id);
+    });
+  });
+}
+const NUDGE = (id)=>`<div class="vin-nudge" role="note">
+  <span>조금 더 정확하게 확인하려면 <strong>차대번호</strong>로 조회해 보세요. 자동차등록증이나 운전석 쪽 앞유리 하단에서 확인할 수 있어요.</span>
+  <button class="go" id="${id}">차대번호로 찾기 →</button></div>`;
+function bindNudge(id){
+  const el = document.getElementById(id);
+  if(el) el.addEventListener("click", ()=>{ switchTab("vin"); $("#vin-input").focus(); });
+}
+function renderEngines(year, showVinNudge){
+  let list = DATA.filter(v=>v.mfr===sel.mfr && v.model===sel.model);
+  if(year) list = list.filter(v=>v.ys<=year && (v.ye===null || v.ye>=year));
+  if(!list.length){
+    $("#engine-list").innerHTML = `<p class="hint">${year}년식 ${sel.model} 데이터는 아직 준비 중이에요. 요약 바의 연식을 눌러 "잘 모르겠어요"로 전체 세대를 보거나, 취급설명서를 확인해 주세요.</p>` + NUDGE("go-vin-empty");
+    bindNudge("go-vin-empty");
+    return;
+  }
+  const gens = [...new Set(list.map(v=>v.gen))];
+  let out = "";
+  for(const g of gens){
+    const sub = list.filter(v=>v.gen===g);
+    const yr = sub[0].ye ? `${Math.min(...sub.map(v=>v.ys))}–${Math.max(...sub.map(v=>v.ye??0))}` : `${Math.min(...sub.map(v=>v.ys))}–현재`;
+    if(gens.length>1) out += `<div class="gen-head">${g} 세대 (${yr})</div>`;
+    out += sub.map(engineRow).join("");
+  }
+  $("#engine-list").innerHTML = (showVinNudge ? NUDGE("go-vin") : "") + out;
+  bindEngineList($("#engine-list"));
+  if(showVinNudge) bindNudge("go-vin");
+}
+
+function decodeVIN(){
+  const raw = $("#vin-input").value.trim().toUpperCase().replace(/\s/g,"");
+  const out = $("#vin-result");
+  $("#result").innerHTML = "";
+  if(raw.length !== 17){ out.innerHTML = `<div class="info-box red">차대번호는 17자리여야 해요. (현재 ${raw.length}자리)</div>`; return; }
+  if(/[IOQ]/.test(raw)){ out.innerHTML = `<div class="info-box red">차대번호에는 I·O·Q가 쓰이지 않아요. 숫자 1·0과 혼동하지 않았는지 확인해 주세요.</div>`; return; }
+  const mfr = WMI[raw.slice(0,3)] || null;
+  const year = YEAR_CODE[raw[9]] || null;
+  if(!mfr){
+    out.innerHTML = `<div class="info-box blue">제조사 코드 <strong>${raw.slice(0,3)}</strong>는 아직 등록되지 않았어요. "차종으로 찾기"에서 직접 선택해 주세요.</div>`;
+    return;
+  }
+  let cands = DATA.filter(v => v.mfr === mfr);
+  if(year) cands = cands.filter(v => v.ys <= year && (v.ye === null || v.ye >= year));
+  out.innerHTML = `
+    <div class="info-box blue">해석 결과 — 제조사 <strong>${mfr}</strong>${year ? ` · 연식 <strong>${year}년형</strong>` : " · 연식 코드 미확인"}<br>
+    ${cands.length ? "아래 후보 중 내 차를 선택하면 규격을 보여드려요." : "해당 연식의 차량 데이터가 아직 없어요."}</div>
+    ${cands.length ? `<div class="engine-list" style="margin-top:12px">${cands.map(v=>{
+      const row = engineRow(v);
+      return row.replace('<span class="en">', `<span class="en">${v.model} · `);
+    }).join("")}</div>` : ""}`;
+  bindEngineList(out, true);
+}
+$("#vin-btn").addEventListener("click", decodeVIN);
+$("#vin-input").addEventListener("keydown", e=>{ if(e.key==="Enter") decodeVIN(); });
+
+function stripHTML(items, searchUrl){
+  if(!items || !items.length){
+    return `<a class="more-link" href="${searchUrl}" target="_blank" rel="noopener">쿠팡 전체 검색결과 보기 →</a>`;
+  }
+  return `<div class="prod-strip" role="list" aria-label="쿠팡 상품 목록">
+    ${items.map(p=>`<a class="prod-card" role="listitem" href="${p.url}" target="_blank" rel="noopener">
+      <span class="prod-thumb">OIL</span>
+      <span class="prod-name">${p.name}</span>
+      <span class="prod-price">${p.price ? p.price.toLocaleString()+'<span class="won">원</span>' : ""}</span>
+      ${p.rocket ? '<span class="prod-delivery">🚀 로켓배송</span>' : ""}
+    </a>`).join("")}
+    <a class="prod-card more-card" href="${searchUrl}" target="_blank" rel="noopener">
+      <span class="more-arrow">→</span>
+      <span class="more-text">전체 검색결과<br>보기</span>
+    </a>
+  </div>
+  <p class="prod-note">가격·상품 정보는 ${CACHE_DATE} 기준이며 실제와 다를 수 있어요.${items.some(p=>!p.manual) ? " (일부 예시 데이터)" : ""}</p>`;
+}
+function productStrip(keyword){
+  return stripHTML(PRODUCT_CACHE[keyword],
+    "https://www.coupang.com/np/search?q=" + encodeURIComponent(keyword));
+}
+
+// ── 오일필터: 브랜드 선택 → 상품 리스트 연동 ──
+let resultVehicle = null;
+let selectedPn = null;   // null = 전체
+function renderFilterProducts(){
+  const v = resultVehicle;
+  if(!v) return;
+  let items, searchPn;
+  if(selectedPn){
+    items = PRODUCT_CACHE[selectedPn + " 오일필터"] || [];
+    searchPn = selectedPn;
+  } else {
+    items = v.filters.flatMap(f => PRODUCT_CACHE[f.pn + " 오일필터"] || []);
+    const oe = v.filters.find(f=>f.brand.includes("OE"));
+    searchPn = oe ? oe.pn : (v.filters[0] ? v.filters[0].pn : "오일필터");
+  }
+  const area = document.getElementById("filter-strip-area");
+  if(area) area.innerHTML = stripHTML(items,
+    "https://www.coupang.com/np/search?q=" + encodeURIComponent(searchPn + " 오일필터"));
+}
+function bindPnChips(){
+  document.querySelectorAll(".pn-item").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      const pn = b.dataset.pn;
+      selectedPn = (selectedPn === pn) ? null : pn;   // 재클릭 시 전체로 토글
+      document.querySelectorAll(".pn-item").forEach(x=>
+        x.setAttribute("aria-pressed", x.dataset.pn === selectedPn));
+      renderFilterProducts();
+    });
+  });
+}
+
+function showResult(id){
+  const v = DATA.find(x=>x.id===id);
+  const o = v.oil;
+  const yr = v.ye ? `${v.ys}–${v.ye}` : `${v.ys}–현재`;
+  const grades = [o.api ? "API "+o.api : null, o.ilsac ? "ILSAC "+o.ilsac : null].filter(Boolean).join(" · ");
+  const specRows = o.visc ? `
+    <div class="spec-row"><dt>오일 종류</dt><dd>${o.type ?? "—"}</dd></div>
+    ${grades ? `<div class="spec-row"><dt>품질 등급</dt><dd>${grades}</dd></div>` : ""}
+    <div class="spec-row"><dt>주입량 (필터 포함)</dt><dd>${o.cap} L</dd></div>
+    <div class="spec-row"><dt>표준 교환주기</dt><dd>${o.interval.toLocaleString()} km</dd></div>
+    <div class="spec-row"><dt>가혹조건 주기</dt><dd>${o.severe.toLocaleString()} km</dd></div>`
+    : `<div class="spec-row"><dt>엔진오일 스펙</dt><dd>데이터 준비 중</dd></div>`;
+  const oe = v.filters.find(f=>f.brand.includes("OE"));
+
+  $("#result").innerHTML = `
+  <section class="result-card" aria-label="차량 규격 정보">
+    <div class="result-head">
+      <div class="result-title">${v.mfr} ${v.model} ${v.gen}${v.trim!=="기본" ? " · "+v.trim : ""}</div>
+      <div class="result-sub">${v.engine} · ${yr}${v.cc ? " · "+v.cc.toLocaleString()+"cc" : ""}</div>
+    </div>
+    <div class="result-body">
+
+      <div class="spec-section">
+        <div class="sec-title">엔진오일</div>
+        <div class="visc-line">
+          <span class="visc-value">${o.visc ?? "N/A"}</span>
+          ${o.visc ? '<span class="visc-badge">제조사 권장 점도</span>' : ""}
+        </div>
+        <dl class="spec-list">${specRows}</dl>
+        ${o.visc ? productStrip(o.visc + " 합성 엔진오일") : ""}
+      </div>
+
+      <div class="section-divider"></div>
+
+      <div class="spec-section">
+        <div class="sec-title">오일필터</div>
+        <div class="visc-line">
+          <span class="visc-value">${oe ? oe.pn : (v.filters[0] ? v.filters[0].pn : "확인 필요")}</span>
+          ${oe ? '<span class="visc-badge">순정(OE) 품번</span>' : ""}
+        </div>
+        <div class="pn-list">
+          ${v.filters.length ? v.filters.map(f=>`<button class="pn-item" aria-pressed="false" data-pn="${f.pn}">
+            <span class="pn-brand">${f.brand}</span>
+            <span class="pn-num">${f.pn}</span></button>`).join("")
+          : '<p class="hint">필터 품번 데이터 준비 중 — 정비소 또는 취급설명서를 확인해 주세요.</p>'}
+        </div>
+        <div id="filter-strip-area"></div>
+      </div>
+
+      <div class="trust ${o.verified ? "v":"e"}">
+        <span class="badge">${o.verified ? "검증됨":"추정치"}</span>
+        <span>${o.verified
+          ? "취급설명서·순정부품몰에서 확인된 규격이에요."
+          : "동일 엔진 계열에서 추정한 값이 포함되어 있어요. 정비 전 취급설명서로 최종 확인해 주세요."}</span>
+      </div>
+    </div>
+  </section>`;
+  resultVehicle = v;
+  selectedPn = null;
+  bindPnChips();
+  renderFilterProducts();
+  $("#result").scrollIntoView({behavior:"smooth", block:"start"});
+}
+
+renderMfrs();
+</script>
+</body>
+</html>
