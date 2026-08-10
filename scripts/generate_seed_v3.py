@@ -7,7 +7,7 @@
 """
 import sqlite3, os
 
-DB = os.path.join(os.path.dirname(__file__), "car_oil.db")
+DB = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data", "car_oil.db")
 
 # 공통 필터 상수 (현대·기아·제네시스 패턴)
 F35505 = [("현대모비스(OE)", "26300-35505", 1)]          # 감마/누우/세타2 가솔린 공통 (verified 패턴)

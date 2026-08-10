@@ -21,7 +21,7 @@ from datetime import datetime, timezone
 # ── 설정 ──────────────────────────────────────────────
 ACCESS_KEY = os.environ.get("COUPANG_ACCESS_KEY", "")   # TODO: 파트너스 최종승인 후 입력
 SECRET_KEY = os.environ.get("COUPANG_SECRET_KEY", "")   # TODO
-DB_PATH    = os.path.join(os.path.dirname(__file__), "car_oil.db")
+DB_PATH    = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data", "car_oil.db")
 DOMAIN     = "https://api-gateway.coupang.com"
 SEARCH_PATH = "/v2/providers/affiliate_open_api/apis/openapi/v1/products/search"
 LIMIT      = 6          # 키워드당 캐시할 상품 수 (API 최대 10)
@@ -35,8 +35,8 @@ def build_keywords(conn):
     kws = set()
     for (v,) in cur.execute("SELECT DISTINCT viscosity FROM engine_oil_specs WHERE viscosity IS NOT NULL"):
         kws.add(f"{v} 합성 엔진오일")
-    for (pn,) in cur.execute("SELECT DISTINCT part_number FROM oil_filters"):
-        kws.add(f"{pn} 오일필터")
+    for pt, pn in cur.execute("SELECT DISTINCT part_type, part_number FROM parts"):
+        kws.add(f"{pn} {pt}")   # "26300-35505 오일필터" / "97133-D1000 에어컨필터" / "650mm 와이퍼"
     return sorted(kws)
 
 
@@ -79,6 +79,14 @@ def mock_products(keyword):
         ("지크 X9 {v} 100% 합성 4L", 29800, 0),
         ("캐스트롤 엣지 {v} 티타늄 4L", 41200, 1),
     ] if "엔진오일" in keyword else [
+        ("보쉬 에어로트윈 와이퍼 {p}", 12900, 1),
+        ("현대모비스 순정 와이퍼 {p}", 9800, 0),
+        ("불스원 레인OK 하이브리드 {p}", 8900, 1),
+    ] if "와이퍼" in keyword else [
+        ("현대모비스 순정 에어컨필터 {p}", 8900, 1),
+        ("{p} 호환 활성탄 에어컨필터 2개입", 13900, 1),
+        ("3M 초미세먼지 에어컨필터 {p} 호환", 11500, 0),
+    ] if "에어컨필터" in keyword else [
         ("현대모비스 순정 오일필터 {p}", 4900, 1),
         ("{p} 호환 오일필터 3개 세트", 12800, 0),
         ("불스원 프리미엄 오일필터 {p} 호환", 6300, 1),

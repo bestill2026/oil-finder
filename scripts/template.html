@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>오일 파인더 — 내 차 엔진오일·필터 규격 찾기</title>
+<title>마이카핏 — 내 차에 딱 맞는 부품 규격 찾기</title>
 <style>
 /* ── G마켓 산스 ── */
 @font-face{font-family:'GmarketSans';font-weight:500;font-style:normal;
@@ -182,6 +182,9 @@ select.chip{border-radius:8px;padding:10px 32px 10px 12px;appearance:none;
 
 /* ── 신뢰도 배지 (GDS Badges: semantic) ── */
 .section-divider{height:1px;background:var(--g200);margin:20px -16px}
+.extra-detail{margin-top:14px;padding:14px;border:1px solid var(--g200);border-radius:8px}
+.est-caption{margin-top:10px;background:var(--orange-50);border-radius:6px;
+  padding:8px 10px;font-size:11px;color:var(--orange-700)}
 .trust{display:flex;align-items:flex-start;gap:8px;margin-top:16px;padding:12px 14px;
   border-radius:8px;font-size:12px;line-height:1.6}
 .trust.v{background:var(--green-50);color:var(--green-700)}
@@ -201,8 +204,8 @@ footer{margin-top:28px;font-size:11px;color:var(--g400);line-height:1.7}
 
 <header>
   <div class="wrap">
-    <h1 class="brand">오일파인더<span class="dot">.</span></h1>
-    <p class="tagline">차종을 고르거나 차대번호를 입력하면, 제조사 규격에 맞는 엔진오일과 오일필터 품번을 알려드려요.</p>
+    <h1 class="brand">마이카핏<span class="dot">.</span></h1>
+    <p class="tagline">차종을 고르거나 차대번호를 입력하면, 내 차에 딱 맞는 엔진오일·부품 규격을 알려드려요.</p>
   </div>
 </header>
 
@@ -518,6 +521,83 @@ function bindPnChips(){
   });
 }
 
+// ── 이 차의 다른 소모품 (크로스셀 칩) ──
+let selectedExtra = null;      // '에어컨필터' | '와이퍼' | null(접힘)
+let selectedExtraKey = null;   // 선택된 품번/위치
+function extrasChipsHTML(v){
+  const types = Object.keys(v.extras || {});
+  if(!types.length) return "";
+  return `
+      <div class="section-divider"></div>
+      <div class="spec-section">
+        <div class="sec-title">이 차의 다른 소모품</div>
+        <div class="choices" style="margin-bottom:0" id="extra-chips">
+          ${types.map(tp=>`<button class="chip" aria-pressed="false" data-type="${tp}">${tp}</button>`).join("")}
+        </div>
+        <div id="extra-detail-area"></div>
+      </div>`;
+}
+function renderExtraDetail(){
+  const area = document.getElementById("extra-detail-area");
+  if(!area) return;
+  document.querySelectorAll("#extra-chips .chip").forEach(x=>
+    x.setAttribute("aria-pressed", x.dataset.type === selectedExtra));
+  if(!selectedExtra){ area.innerHTML = ""; return; }
+  const items = resultVehicle.extras[selectedExtra] || [];
+  const anyEst = items.some(i=>!i.v);
+
+  if(selectedExtra === "와이퍼"){
+    const cur = items.find(i=>i.label === selectedExtraKey) || items[0];
+    const d = items.find(i=>i.label==="운전석"), pjoin = items.find(i=>i.label==="조수석");
+    const hero = d && pjoin ? `${parseInt(d.pn)} / ${parseInt(pjoin.pn)} mm` : cur.pn;
+    area.innerHTML = `<div class="extra-detail">
+      <div class="visc-line"><span class="visc-value">${hero}</span>
+        <span class="visc-badge">규격 사이즈</span></div>
+      <div class="pn-list">
+        ${items.map(i=>`<button class="pn-item" aria-pressed="${i===cur}" data-key="${i.label}">
+          <span class="pn-brand">${i.label}</span><span class="pn-num">${i.pn}</span></button>`).join("")}
+      </div>
+      <div id="extra-strip">${stripHTML(PRODUCT_CACHE[cur.pn+" 와이퍼"],
+        "https://www.coupang.com/np/search?q="+encodeURIComponent(cur.pn+" 와이퍼"))}</div>
+      ${anyEst ? '<div class="est-caption">추정 규격 — 장착 전 확인해 주세요</div>' : ""}
+    </div>`;
+    area.querySelectorAll(".pn-item").forEach(b=>b.addEventListener("click", ()=>{
+      selectedExtraKey = b.dataset.key; renderExtraDetail();
+    }));
+  } else {  // 에어컨필터 등 품번형
+    const oe = items.find(i=>(i.brand||"").includes("OE")) || items[0];
+    const cur = items.find(i=>i.pn === selectedExtraKey) || null;  // null = 전체
+    const strip = cur ? (PRODUCT_CACHE[cur.pn+" "+selectedExtra] || [])
+                      : items.flatMap(i=>PRODUCT_CACHE[i.pn+" "+selectedExtra] || []);
+    const searchPn = cur ? cur.pn : oe.pn;
+    area.innerHTML = `<div class="extra-detail">
+      <div class="visc-line"><span class="visc-value">${oe.pn}</span>
+        ${(oe.brand||"").includes("OE") ? '<span class="visc-badge">순정(OE) 품번</span>' : ""}</div>
+      <div class="pn-list">
+        ${items.map(i=>`<button class="pn-item" aria-pressed="${cur && i.pn===cur.pn}" data-key="${i.pn}">
+          <span class="pn-brand">${i.brand ?? ""}</span><span class="pn-num">${i.pn}</span></button>`).join("")}
+      </div>
+      <div id="extra-strip">${stripHTML(strip,
+        "https://www.coupang.com/np/search?q="+encodeURIComponent(searchPn+" "+selectedExtra))}</div>
+      ${anyEst ? '<div class="est-caption">추정 규격 — 장착 전 확인해 주세요</div>' : ""}
+    </div>`;
+    area.querySelectorAll(".pn-item").forEach(b=>b.addEventListener("click", ()=>{
+      selectedExtraKey = (selectedExtraKey === b.dataset.key) ? null : b.dataset.key;
+      renderExtraDetail();
+    }));
+  }
+}
+function bindExtraChips(){
+  document.querySelectorAll("#extra-chips .chip").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      const tp = b.dataset.type;
+      selectedExtra = (selectedExtra === tp) ? null : tp;   // 재클릭 = 접기
+      selectedExtraKey = null;
+      renderExtraDetail();
+    });
+  });
+}
+
 function showResult(id){
   const v = DATA.find(x=>x.id===id);
   const o = v.oil;
@@ -566,6 +646,7 @@ function showResult(id){
         </div>
         <div id="filter-strip-area"></div>
       </div>
+      ${extrasChipsHTML(v)}
 
       <div class="trust ${o.verified ? "v":"e"}">
         <span class="badge">${o.verified ? "검증됨":"추정치"}</span>
@@ -577,8 +658,10 @@ function showResult(id){
   </section>`;
   resultVehicle = v;
   selectedPn = null;
+  selectedExtra = null; selectedExtraKey = null;
   bindPnChips();
   renderFilterProducts();
+  bindExtraChips();
   $("#result").scrollIntoView({behavior:"smooth", block:"start"});
 }
 

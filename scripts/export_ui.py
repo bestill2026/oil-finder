@@ -17,12 +17,12 @@ car_oil.db에서 차량 데이터와 상품 캐시를 추출해
 import sqlite3, json, os, sys
 
 BASE = os.path.dirname(os.path.abspath(__file__))
-DB   = os.path.join(BASE, "car_oil.db")
+DB   = os.path.join(BASE, "..", "data", "car_oil.db")
 
 def arg(flag, default):
     return sys.argv[sys.argv.index(flag) + 1] if flag in sys.argv else default
 
-TEMPLATE = os.path.join(BASE, arg("--template", "template.html"))
+TEMPLATE = os.path.join(BASE, arg("--template", "oil_finder_gds_template.html"))
 OUT      = os.path.join(BASE, arg("--out", "oil_finder.html"))
 
 
@@ -41,8 +41,15 @@ def export_vehicles(conn):
     vehicles = []
     for r in cur.fetchall():
         c2 = conn.cursor()
-        c2.execute("SELECT brand, part_number FROM oil_filters WHERE vehicle_id=?", (r["id"],))
-        filters = [{"brand": f[0], "pn": f[1]} for f in c2.fetchall()]
+        c2.execute("""SELECT part_type, label, brand, part_number, verified
+                      FROM parts WHERE vehicle_id=? ORDER BY part_type, id""", (r["id"],))
+        filters, extras = [], {}
+        for pt, label, brand, pn, ver in c2.fetchall():
+            if pt == "오일필터":
+                filters.append({"brand": brand, "pn": pn})
+            else:
+                extras.setdefault(pt, []).append(
+                    {"label": label, "brand": brand, "pn": pn, "v": bool(ver)})
         vehicles.append({
             "id": r["id"], "mfr": r["mfr"], "model": r["model_name"], "gen": r["generation"],
             "cat": r["body_type"],
@@ -52,7 +59,7 @@ def export_vehicles(conn):
                     "type": r["oil_type"], "cap": r["capacity_liters"],
                     "interval": r["change_interval_km"], "severe": r["severe_interval_km"],
                     "verified": "verified" in (r["source"] or "")},
-            "filters": filters})
+            "filters": filters, "extras": extras})
     return vehicles
 
 

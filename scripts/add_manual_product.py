@@ -25,7 +25,7 @@ import sqlite3, sys, os
 from datetime import datetime
 from urllib.parse import urlparse, parse_qs
 
-DB = os.path.join(os.path.dirname(__file__), "car_oil.db")
+DB = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data", "car_oil.db")
 
 def validate_url(url):
     """상품 상세 URL인지 검증 (검색 URL이면 경고)"""
