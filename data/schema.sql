@@ -1,16 +1,15 @@
 -- ============================================================
--- 자동차 오일필터/엔진오일 매칭 서비스 - DB 스키마
+-- 마이카핏 DB 스키마 (v2 — parts 통합 + body_type + manual 캐시)
+-- 주의: 이 파일은 현재 DB에서 덤프한 최신본. 구버전 schema.sql 교체용.
 -- ============================================================
 
 PRAGMA foreign_keys = ON;
 
--- 1. 제조사
 CREATE TABLE manufacturers (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
     name        TEXT NOT NULL UNIQUE          -- 예: 현대, 기아, 벤츠
 );
 
--- 2. 차량 (모델 + 세대 + 연식범위 + 엔진 조합 단위로 한 행)
 CREATE TABLE vehicles (
     id               INTEGER PRIMARY KEY AUTOINCREMENT,
     manufacturer_id  INTEGER NOT NULL REFERENCES manufacturers(id),
@@ -21,11 +20,10 @@ CREATE TABLE vehicles (
     engine_code      TEXT NOT NULL,           -- 예: 스마트스트림 G1.6
     fuel_type        TEXT NOT NULL,           -- 가솔린 / 디젤 / LPG / 하이브리드 / 전기
     displacement_cc  INTEGER,                 -- 배기량(cc), 전기차는 NULL
-    trim_note        TEXT,                    -- 예: N라인, 하이브리드 등 세부 구분
+    trim_note        TEXT, body_type TEXT,                    -- 예: N라인, 하이브리드 등 세부 구분
     UNIQUE(manufacturer_id, model_name, generation, engine_code, fuel_type)
 );
 
--- 3. 엔진오일 스펙 (차량 1건당 보통 1개, 트림별로 다르면 여러 개)
 CREATE TABLE engine_oil_specs (
     id                    INTEGER PRIMARY KEY AUTOINCREMENT,
     vehicle_id            INTEGER NOT NULL REFERENCES vehicles(id),
@@ -41,17 +39,42 @@ CREATE TABLE engine_oil_specs (
     notes                 TEXT
 );
 
--- 4. 오일필터 (브랜드별로 여러 개 매칭 가능하므로 1:N)
-CREATE TABLE oil_filters (
-    id              INTEGER PRIMARY KEY AUTOINCREMENT,
-    vehicle_id      INTEGER NOT NULL REFERENCES vehicles(id),
-    brand           TEXT NOT NULL,        -- 예: 현대모비스(OE), MANN-FILTER, Bosch
-    part_number     TEXT NOT NULL,        -- 해당 브랜드의 품번
-    oe_part_number  TEXT,                 -- OE(순정) 품번 (브랜드가 OE가 아닐 때 상호참조용)
-    filter_type     TEXT DEFAULT '오일필터',
-    UNIQUE(vehicle_id, brand, part_number)
+CREATE INDEX idx_vehicles_lookup ON vehicles(model_name, generation, engine_code);
+
+CREATE INDEX idx_oil_specs_vehicle ON engine_oil_specs(vehicle_id);
+
+CREATE TABLE vehicle_aliases (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    vehicle_id  INTEGER NOT NULL REFERENCES vehicles(id),
+    alias_type  TEXT NOT NULL,     -- 'reg_name'(등록차명) / 'detail_model'(상세모델명) / 'engine_form'(원동기형식)
+    alias_value TEXT NOT NULL,
+    UNIQUE(alias_type, alias_value, vehicle_id)
 );
 
-CREATE INDEX idx_vehicles_lookup ON vehicles(model_name, generation, engine_code);
-CREATE INDEX idx_oil_specs_vehicle ON engine_oil_specs(vehicle_id);
-CREATE INDEX idx_filters_vehicle ON oil_filters(vehicle_id);
+CREATE TABLE product_cache (
+    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    keyword      TEXT NOT NULL,          -- 검색 키워드 (예: '0W-20 합성 엔진오일', '26300-35505 오일필터')
+    product_name TEXT NOT NULL,
+    price        INTEGER,
+    image_url    TEXT,
+    product_url  TEXT NOT NULL,          -- 파트너스 트래킹 링크
+    is_rocket    INTEGER DEFAULT 0,
+    rank         INTEGER,
+    fetched_at   TEXT NOT NULL           -- 갱신 시각 (ISO)
+, manual INTEGER DEFAULT 0);
+
+CREATE INDEX idx_cache_keyword ON product_cache(keyword);
+
+CREATE TABLE parts (
+    id             INTEGER PRIMARY KEY AUTOINCREMENT,
+    vehicle_id     INTEGER NOT NULL REFERENCES vehicles(id),
+    part_type      TEXT NOT NULL,          -- '오일필터'|'에어컨필터'|'와이퍼'|(향후 확장)
+    label          TEXT,                   -- 와이퍼: 운전석/조수석/후방
+    brand          TEXT,
+    part_number    TEXT NOT NULL,          -- 품번 또는 사이즈('650mm')
+    oe_part_number TEXT,
+    verified       INTEGER DEFAULT 0,
+    UNIQUE(vehicle_id, part_type, label, brand, part_number)
+);
+
+CREATE INDEX idx_parts_vehicle ON parts(vehicle_id, part_type);
