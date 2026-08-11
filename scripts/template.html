@@ -4,6 +4,22 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>마이카핏 — 내 차에 딱 맞는 부품 규격 찾기</title>
+<!-- ═══ 조회 로그 (GA4) ═══
+     사용법: analytics.google.com에서 GA4 속성 생성 → 측정 ID(G-로 시작) 발급
+     → 아래 GA_ID 값을 교체 → 재빌드(또는 index.html에서 동일 문자열 치환).
+     교체 전에는 어떤 요청도 발생하지 않습니다. -->
+<script>
+const GA_ID = "G-XXXXXXXXXX";
+if(!GA_ID.includes("XXXX")){
+  const s = document.createElement("script"); s.async = true;
+  s.src = "https://www.googletagmanager.com/gtag/js?id=" + GA_ID;
+  document.head.appendChild(s);
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = function(){ dataLayer.push(arguments); };
+  gtag("js", new Date()); gtag("config", GA_ID);
+}
+function track(n, p){ if(window.gtag) gtag("event", n, p || {}); }
+</script>
 <style>
 /* ── G마켓 산스 ── */
 @font-face{font-family:'GmarketSans';font-weight:500;font-style:normal;
@@ -288,6 +304,7 @@ function scrollToCard(){
   document.getElementById("finder-card").scrollIntoView({behavior:"smooth", block:"start"});
 }
 function goStep(step){
+  track("view_step_" + step);
   STEPS.forEach(s=>{
     const el = document.getElementById("step-"+s);
     if(el) el.classList.toggle("hidden", s!==step);
@@ -342,6 +359,7 @@ function renderMfrs(){
     b.addEventListener("click", ()=>{
       resetFrom("mfr");
       sel.mfr = b.dataset.mfr;
+      track("select_maker", {maker: sel.mfr});
       $("#mfr-choices").querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed", x===b));
       renderModels();
       goStep("model");
@@ -365,6 +383,7 @@ function renderModels(){
     b.addEventListener("click", ()=>{
       resetFrom("model");
       sel.model = b.dataset.model;
+      track("select_model", {maker: sel.mfr, model: sel.model});
       $("#model-choices").querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed", x===b));
       renderYearStep();
       goStep("year");
@@ -381,11 +400,13 @@ function renderYearStep(){
   selEl.onchange = ()=>{
     if(!selEl.value) return;
     sel.year = +selEl.value; sel.yearKnown = true;
+    track("select_year", {year: sel.year});
     renderEngines(sel.year);
     goStep("engine");
   };
   $("#year-unknown").onclick = ()=>{
     sel.year = null; sel.yearKnown = false;
+    track("select_year_unknown", {maker: sel.mfr, model: sel.model});
     renderEngines(null, true);
     goStep("engine");
   };
@@ -424,6 +445,7 @@ function renderEngines(year, showVinNudge){
   let list = DATA.filter(v=>v.mfr===sel.mfr && v.model===sel.model);
   if(year) list = list.filter(v=>v.ys<=year && (v.ye===null || v.ye>=year));
   if(!list.length){
+    track("no_data", {maker: sel.mfr, model: sel.model, year: year || 0});
     $("#engine-list").innerHTML = `<p class="hint">${year}년식 ${sel.model} 데이터는 아직 준비 중이에요. 요약 바의 연식을 눌러 "잘 모르겠어요"로 전체 세대를 보거나, 취급설명서를 확인해 주세요.</p>` + NUDGE("go-vin-empty");
     bindNudge("go-vin-empty");
     return;
@@ -450,6 +472,7 @@ function decodeVIN(){
   const mfr = WMI[raw.slice(0,3)] || null;
   const year = YEAR_CODE[raw[9]] || null;
   if(!mfr){
+    track("vin_decode", {ok: 0});
     out.innerHTML = `<div class="info-box blue">제조사 코드 <strong>${raw.slice(0,3)}</strong>는 아직 등록되지 않았어요. "차종으로 찾기"에서 직접 선택해 주세요.</div>`;
     return;
   }
@@ -462,6 +485,7 @@ function decodeVIN(){
       const row = engineRow(v);
       return row.replace('<span class="en">', `<span class="en">${v.model} · `);
     }).join("")}</div>` : ""}`;
+  track("vin_decode", {ok: 1, candidates: cands.length});
   bindEngineList(out, true);
 }
 $("#vin-btn").addEventListener("click", decodeVIN);
@@ -592,6 +616,7 @@ function bindExtraChips(){
     b.addEventListener("click", ()=>{
       const tp = b.dataset.type;
       selectedExtra = (selectedExtra === tp) ? null : tp;   // 재클릭 = 접기
+      if(selectedExtra) track("extra_open", {part: selectedExtra, vehicle: resultVehicle ? resultVehicle.model + " " + (resultVehicle.gen||"") : ""});
       selectedExtraKey = null;
       renderExtraDetail();
     });
@@ -656,6 +681,8 @@ function showResult(id){
       </div>
     </div>
   </section>`;
+  track("view_result", {maker: v.mfr, model: v.model, gen: v.gen || "",
+    engine: v.engine, fuel: v.fuel, oil_verified: v.oil.verified ? 1 : 0});
   resultVehicle = v;
   selectedPn = null;
   selectedExtra = null; selectedExtraKey = null;
@@ -666,6 +693,16 @@ function showResult(id){
 }
 
 renderMfrs();
+
+// ── 쿠팡 아웃바운드 클릭 (위임 리스너) ──
+document.addEventListener("click", e => {
+  const a = e.target.closest('a[href*="coupang.com"]');
+  if(a) track("click_coupang", {
+    vehicle: resultVehicle ? resultVehicle.mfr + " " + resultVehicle.model + " " + (resultVehicle.gen||"") : "",
+    text: (a.textContent || "").trim().slice(0, 40)
+  });
+});
+track("view_step_maker");
 </script>
 </body>
 </html>
